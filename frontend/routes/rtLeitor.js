@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var alunosApp = require("../apps/alunos/controller/ctlAlunos")
+var alunosApp = require("..\apps\leitor\controller\ctlLeitor.js")
 
 
 
@@ -16,15 +16,15 @@ function authenticationMiddleware(req, res, next) {
 }; 
   
 /* GET métodos */
-router.get('/ManutAlunos', authenticationMiddleware, alunosApp.manutAlunos)
-router.get('/InsertAlunos', authenticationMiddleware, alunosApp.insertAlunos);
-router.get('/ViewAlunos/:id', authenticationMiddleware, alunosApp.ViewAlunos);
-router.get('/UpdateAlunos/:id', authenticationMiddleware, alunosApp.UpdateAluno);
+router.get('/manutLeitor', authenticationMiddleware, alunosApp.manutAlunos)
+router.get('/insertLeitor', authenticationMiddleware, alunosApp.insertAlunos);
+router.get('/viewLeitor/:id', authenticationMiddleware, alunosApp.ViewAlunos);
+router.get('/updateLeitor/:id', authenticationMiddleware, alunosApp.UpdateAluno);
 
 /* POST métodos */
-router.post('/InsertAlunos', authenticationMiddleware, alunosApp.insertAlunos);
-router.post('/UpdateAlunos', authenticationMiddleware, alunosApp.UpdateAluno);
-router.post('/DeleteAlunos', authenticationMiddleware, alunosApp.DeleteAluno);
+router.post('/insertLeitor', authenticationMiddleware, alunosApp.insertAlunos);
+router.post('/updateLeitor', authenticationMiddleware, alunosApp.UpdateAluno);
+router.post('/deleteLeitor', authenticationMiddleware, alunosApp.DeleteAluno);
 // router.post('/viewAlunos', authenticationMiddleware, alunosApp.viewAlunos);
 
 

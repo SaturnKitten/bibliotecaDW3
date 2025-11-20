@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var alunosApp = require("../apps/alunos/controller/ctlAlunos")
+var alunosApp = require("..\apps\livro\controller\ctlLivro.js")
 
 
 
@@ -16,15 +16,15 @@ function authenticationMiddleware(req, res, next) {
 }; 
   
 /* GET métodos */
-router.get('/ManutAlunos', authenticationMiddleware, alunosApp.manutAlunos)
-router.get('/InsertAlunos', authenticationMiddleware, alunosApp.insertAlunos);
-router.get('/ViewAlunos/:id', authenticationMiddleware, alunosApp.ViewAlunos);
-router.get('/UpdateAlunos/:id', authenticationMiddleware, alunosApp.UpdateAluno);
+router.get('/manutLivro', authenticationMiddleware, alunosApp.manutLivro)
+router.get('/insertLivro', authenticationMiddleware, alunosApp.insertLivro);
+router.get('/viewLivro/:id', authenticationMiddleware, alunosApp.ViewLivro);
+router.get('/updateLivro/:id', authenticationMiddleware, alunosApp.UpdateLivro);
 
 /* POST métodos */
-router.post('/InsertAlunos', authenticationMiddleware, alunosApp.insertAlunos);
-router.post('/UpdateAlunos', authenticationMiddleware, alunosApp.UpdateAluno);
-router.post('/DeleteAlunos', authenticationMiddleware, alunosApp.DeleteAluno);
+router.post('/insertLivro', authenticationMiddleware, alunosApp.insertLivro);
+router.post('/updateLivro', authenticationMiddleware, alunosApp.UpdateLivro);
+router.post('/deleteLivro', authenticationMiddleware, alunosApp.DeleteLivro);
 // router.post('/viewAlunos', authenticationMiddleware, alunosApp.viewAlunos);
 
 

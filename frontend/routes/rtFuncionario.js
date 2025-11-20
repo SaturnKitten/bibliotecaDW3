@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var alunosApp = require("../apps/alunos/controller/ctlAlunos")
+var alunosApp = require("..\apps\funcionario\controller\ctlFuncionario.js")
 
 
 
@@ -16,15 +16,15 @@ function authenticationMiddleware(req, res, next) {
 }; 
   
 /* GET métodos */
-router.get('/ManutAlunos', authenticationMiddleware, alunosApp.manutAlunos)
-router.get('/InsertAlunos', authenticationMiddleware, alunosApp.insertAlunos);
-router.get('/ViewAlunos/:id', authenticationMiddleware, alunosApp.ViewAlunos);
-router.get('/UpdateAlunos/:id', authenticationMiddleware, alunosApp.UpdateAluno);
+router.get('/manutFuncionario', authenticationMiddleware, alunosApp.manutAlunos)
+router.get('/insertFuncionario', authenticationMiddleware, alunosApp.insertAlunos);
+router.get('/viewFuncionario/:id', authenticationMiddleware, alunosApp.ViewAlunos);
+router.get('/updateFuncionario/:id', authenticationMiddleware, alunosApp.UpdateAluno);
 
 /* POST métodos */
-router.post('/InsertAlunos', authenticationMiddleware, alunosApp.insertAlunos);
-router.post('/UpdateAlunos', authenticationMiddleware, alunosApp.UpdateAluno);
-router.post('/DeleteAlunos', authenticationMiddleware, alunosApp.DeleteAluno);
+router.post('/insertFuncionario', authenticationMiddleware, alunosApp.insertAlunos);
+router.post('/updateFuncionario', authenticationMiddleware, alunosApp.UpdateAluno);
+router.post('/deleteFuncionario', authenticationMiddleware, alunosApp.DeleteAluno);
 // router.post('/viewAlunos', authenticationMiddleware, alunosApp.viewAlunos);
 
 
