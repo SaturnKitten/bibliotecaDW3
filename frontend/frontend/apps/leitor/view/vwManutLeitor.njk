@@ -1,0 +1,36 @@
+{% extends "templates/base.html" %}
+
+{% block content %}
+  <ol class="breadcrumb mb-2"><li class="breadcrumb-item active">{{title}}</li></ol>
+  <div class="row"><div class="col-xl-12">
+    <div class="card-header">Manutenção de Leitores</div>
+    <div class="card-body">
+      <div style="margin-bottom:15px;"><a href="/leitor/insertLeitor" class="btn btn-primary">Inserir novo leitor</a></div>
+
+      <div style="background-color:#f8f9fa">
+        <table id="tabLeitor" class="display" style="width:100%">
+          <thead><tr><th>Ação</th><th>Nome</th><th>Email</th><th>CPF</th><th>Data Nasc.</th></tr></thead>
+          <tbody>
+            {% for reg in data %}
+              <tr>
+                <td>
+                  <a href="/leitor/viewLeitor/{{ reg.id }}" title="Visualizar"><i class="fas fa-search"></i></a>
+                  <a href="/leitor/updateLeitor/{{ reg.id }}" title="Atualizar" style="margin-left:10px;"><i class="fas fa-pencil-alt"></i></a>
+                </td>
+                <td>{{ reg.nome }}</td>
+                <td>{{ reg.email }}</td>
+                <td>{{ reg.cpf }}</td>
+                <td>{{ reg.data_nascimento }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div></div>
+
+  <script>
+    window.onload=function(){ windowOnLoad(); const localErro="{{erro}}"; if(localErro!="") alert("[vwLeitor|onload]Servidor retornou o erro:"+localErro); new DataTable('#tabLeitor'); };
+  </script>
+{% endblock %}
