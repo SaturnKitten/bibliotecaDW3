@@ -81,7 +81,7 @@ INSERT INTO livro (titulo, autor, editora, isbn, edicao, ano_publicacao, id_gene
 
 -- Inserir leitores na tabela leitor
 INSERT INTO leitor (nome, email, cpf, data_nascimento) VALUES
-('Ana Silva', 'ana.silva@example.com', '123.456.789-00', '1990-01-01');
+('Ana Silva', 'ana.silva@example.com', '123.456.789-00', '1990-01-01'),
 ('Bruno Souza', 'bruno.souza@example.com', '987.654.321-00', '1985-05-15');
 
 -- Inserir funcionários na tabela funcionario
