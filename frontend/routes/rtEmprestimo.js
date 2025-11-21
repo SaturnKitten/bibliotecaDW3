@@ -16,15 +16,15 @@ function authenticationMiddleware(req, res, next) {
 }; 
   
 /* GET métodos */
-router.get('/manutEmprestimo', authenticationMiddleware, alunosApp.manutAlunos)
-router.get('/insertEmprestimo', authenticationMiddleware, alunosApp.insertAlunos);
-router.get('/viewEmprestimo/:id', authenticationMiddleware, alunosApp.ViewAlunos);
-router.get('/updateEmprestimo/:id', authenticationMiddleware, alunosApp.UpdateAluno);
+router.get('/manutEmprestimo', authenticationMiddleware, emprestimoApp.manutEmprestimo)
+router.get('/insertEmprestimo', authenticationMiddleware, emprestimoApp.insertEmprestimo);
+router.get('/viewEmprestimo/:id', authenticationMiddleware, emprestimoApp.ViewEmprestimo);
+router.get('/updateEmprestimo/:id', authenticationMiddleware, emprestimoApp.UpdateEmprestimo);
 
 /* POST métodos */
-router.post('/insertEmprestimo', authenticationMiddleware, alunosApp.insertAlunos);
-router.post('/updateEmprestimo', authenticationMiddleware, alunosApp.UpdateAluno);
-router.post('/deleteEmprestimo', authenticationMiddleware, alunosApp.DeleteAluno);
+router.post('/insertEmprestimo', authenticationMiddleware, emprestimoApp.insertEmprestimo);
+router.post('/updateEmprestimo', authenticationMiddleware, emprestimoApp.UpdateEmprestimo);
+router.post('/deleteEmprestimo', authenticationMiddleware, emprestimoApp.DeleteEmprestimo);
 // router.post('/viewAlunos', authenticationMiddleware, alunosApp.viewAlunos);
 
 
