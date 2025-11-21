@@ -16,15 +16,15 @@ function authenticationMiddleware(req, res, next) {
 }; 
   
 /* GET métodos */
-router.get('/manutGenero', authenticationMiddleware, alunosApp.manutAlunos)
-router.get('/insertGenero', authenticationMiddleware, alunosApp.insertAlunos);
-router.get('/viewGenero/:id', authenticationMiddleware, alunosApp.ViewAlunos);
-router.get('/updateGenero/:id', authenticationMiddleware, alunosApp.UpdateAluno);
+router.get('/manutGenero', authenticationMiddleware, alunosApp.manutGenero)
+router.get('/insertGenero', authenticationMiddleware, alunosApp.insertGenero);
+router.get('/viewGenero/:id', authenticationMiddleware, alunosApp.ViewGenero);
+router.get('/updateGenero/:id', authenticationMiddleware, alunosApp.UpdateGenero);
 
 /* POST métodos */
-router.post('/insertGenero', authenticationMiddleware, alunosApp.insertAlunos);
-router.post('/updateGenero', authenticationMiddleware, alunosApp.UpdateAluno);
-router.post('/deleteGenero', authenticationMiddleware, alunosApp.DeleteAluno);
+router.post('/insertGenero', authenticationMiddleware, alunosApp.insertGenero);
+router.post('/updateGenero', authenticationMiddleware, alunosApp.UpdateGenero);
+router.post('/deleteGenero', authenticationMiddleware, alunosApp.DeleteGenero);
 // router.post('/viewAlunos', authenticationMiddleware, alunosApp.viewAlunos);
 
 
