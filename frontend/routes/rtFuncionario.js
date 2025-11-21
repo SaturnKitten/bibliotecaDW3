@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var funcionarioApp = require("..\apps\funcionario\controller\ctlFuncionario.js")
+var funcionarioApp = require("../apps/funcionario/controller/ctlFuncionario.js")
 
 
 
