@@ -1,37 +1,77 @@
 {% extends "templates/base.html" %}
 
 {% block content %}
-  <ol class="breadcrumb mb-2"><li class="breadcrumb-item active">{{title}}</li></ol>
-  <div class="row"><div class="col-xl-12">
-    <div class="card-header">Manutenção de Livros</div>
-    <div class="card-body">
-      <div style="margin-bottom:15px;"><a href="/livro/insertLivro" class="btn btn-primary">Inserir novo livro</a></div>
 
-      <div style="background-color:#f8f9fa">
-        <table id="tabLivro" class="display" style="width:100%">
-          <thead><tr><th>Ação</th><th>Título</th><th>Autor</th><th>Editora</th><th>Ano</th><th>Gênero</th></tr></thead>
-          <tbody>
-            {% for reg in data %}
-              <tr>
-                <td>
-                  <a href="/livro/viewLivro/{{ reg.id }}" title="Visualizar"><i class="fas fa-search"></i></a>
-                  <a href="/livro/updateLivro/{{ reg.id }}" title="Atualizar" style="margin-left:10px;"><i class="fas fa-pencil-alt"></i></a>
-                </td>
-                <td>{{ reg.titulo }}</td>
-                <td>{{ reg.autor }}</td>
-                <td>{{ reg.editora }}</td>
-                <td>{{ reg.ano_publicacao }}</td>
-                <td>{{ reg.genero_nome or reg.nome }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+  <ol class="breadcrumb mb-2">
+    <li class="breadcrumb-item active">{{title}}</li>
+  </ol>
+  <div class="row">
+    <div class="col-xl-12">
+
+      <div class="card-header">
+        Manutenção de Livros
+      </div>
+
+      <div class="card-body">
+        <div class="">
+          <div style="margin-bottom: 15px;">
+            <a href="/livro/insertLivro" class="btn btn-primary">
+              Inserir novo livro
+            </a>
+          </div>
+
+          <div style="background-color: #f8f9fa">
+            <table id="tabLivro" class="display" style="width:100%">
+              <thead>
+                <tr>
+                  <th>Ação</th>
+                  <th>ID</th>
+                  <th>Título</th>
+                  <th>Autor</th>
+                  <th>Ano</th>
+                  <th>Gênero</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for reg in data %}
+                  <tr>
+                    <td>
+                      <a href="/livro/viewLivro/{{ reg.id }}" title="Visualizar">
+                        <i class="fas fa-search"></i>
+                      </a>
+
+                      <a href="/livro/updateLivro/{{ reg.id }}" title="Atualizar" style="margin-left: 10px;">
+                        <i class="fas fa-pencil-alt"></i>
+                      </a>
+                    </td>
+
+                    <td>{{reg.id}}</td>
+                    <td>{{reg.titulo}}</td>
+                    <td>{{reg.autor}}</td>
+                    <td>{{reg.ano}}</td>
+                    <td>{{reg.genero}}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+          </div>
+        </div>
       </div>
 
     </div>
-  </div></div>
+  </div>
 
   <script>
-    window.onload=function(){ windowOnLoad(); const localErro="{{erro}}"; if(localErro!="") alert("[vwLivro|onload]Servidor retornou o erro:"+localErro); new DataTable('#tabLivro'); };
+    window.onload = function () {
+      windowOnLoad();
+      const localErro = "{{erro}}";
+      if (localErro != "") {
+        alert("[vwManutLivro|onload]Erro:" + localErro);
+      }
+      new DataTable('#tabLivro');
+    };
   </script>
+
 {% endblock %}
+

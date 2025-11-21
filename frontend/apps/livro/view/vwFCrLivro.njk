@@ -1,66 +1,131 @@
 {% extends "templates/base.html" %}
 
 {% block content %}
-  <div x-data="livroForm()">
-    <ol class="breadcrumb mb-2"><li class="breadcrumb-item active">{{title}}</li></ol>
-    <div class="row"><div class="col-12">
-      <div class="card-header">{{title}}</div>
-      <div class="card-body">
-        <form>
+<div x-data="livroForm()">
+
+  <ol class="breadcrumb mb-2">
+    <li class="breadcrumb-item active">{{title}}</li>
+  </ol>
+
+  <div class="card">
+    <div class="card-header">Cadastro de Livro</div>
+
+    <div class="card-body">
+
+      <form>
+        <div class="row">
+
           <div class="form-group col-md-6">
-            <label for="titulo">Título</label>
-            <input type="text" id="titulo" class="form-control" x-model="form.titulo" required>
+            <label>Título</label>
+            <input class="form-control" x-model="form.titulo">
           </div>
+
           <div class="form-group col-md-6">
-            <label for="autor">Autor</label>
-            <input type="text" id="autor" class="form-control" x-model="form.autor" required>
+            <label>Autor</label>
+            <input class="form-control" x-model="form.autor">
           </div>
+
           <div class="form-group col-md-6">
-            <label for="editora">Editora</label>
-            <input type="text" id="editora" class="form-control" x-model="form.editora" required>
+            <label>Editora</label>
+            <input class="form-control" x-model="form.editora">
           </div>
+
           <div class="form-group col-md-6">
-            <label for="isbn">ISBN</label>
-            <input type="text" id="isbn" class="form-control" x-model="form.isbn">
+            <label>ISBN</label>
+            <input class="form-control" x-model="form.isbn">
           </div>
-          <div class="form-group col-md-4">
-            <label for="edicao">Edição</label>
-            <input type="text" id="edicao" class="form-control" x-model="form.edicao" required>
+
+          <div class="form-group col-md-3">
+            <label>Edição</label>
+            <input class="form-control" x-model="form.edicao">
           </div>
-          <div class="form-group col-md-4">
-            <label for="ano_publicacao">Ano de Publicação</label>
-            <input type="number" id="ano_publicacao" class="form-control" x-model="form.ano_publicacao" required>
+
+          <div class="form-group col-md-3">
+            <label>Ano de Publicação</label>
+            <input type="number" class="form-control" x-model="form.ano_publicacao">
           </div>
-          <div class="form-group col-md-4">
-            <label for="id_genero">Gênero</label>
-            <select id="id_genero" class="form-select" x-model="form.id_genero">
-              {% for reg in generos %}
-                <option value="{{reg.id}}">{{reg.nome}}</option>
+
+          <div class="form-group col-md-6">
+            <label>Gênero</label>
+            <select class="form-select" x-model="form.id_genero">
+              {% for g in genero %}
+                <option value="{{g.id}}">{{g.nome}}</option>
               {% endfor %}
             </select>
           </div>
 
-          <input type="hidden" x-model="form.removido">
-
-          <button type="button" @click="insertForm()" class="btn btn-primary mt-4">Salvar</button>
-          <a href="/livro/manutLivro" class="btn btn-info mt-4 ml-2">Retornar</a>
-        </form>
-
-        <div class="mt-3"><template x-if="message"><div :class="messageClass" x-text="message"></div></template></div>
-      </div>
-    </div></div>
-
-  <script>
-    function livroForm(){ return {
-      form: { titulo:'', autor:'', editora:'', isbn:'', edicao:'', ano_publicacao:'', id_genero:'', removido:false },
-      message:'', messageClass:'',
-      async insertForm(){ try{ const res=await fetch('/livro/insertLivro',{ method:'POST', headers:{ "Content-Type":"application/json" }, body: JSON.stringify(this.form) }); const r=await res.json(); if(r.status=="ok"){ alert("Livro cadastrado com sucesso"); this.resetForm(); } else { this.message=`Erro: ${r.status}`; this.messageClass='alert alert-danger'; } }catch(e){ this.message=`Erro de conexão: ${e.message}`; this.messageClass='alert alert-danger'; } },
-      resetForm(){ this.form={ titulo:'', autor:'', editora:'', isbn:'', edicao:'', ano_publicacao:'', id_genero:'', removido:false }; this.message=false; }
-    }; }
-  </script>
-{% endblock %}
-          </div>
         </div>
+
+        <button type="button" @click="insertForm()" class="btn btn-primary mt-4">Salvar</button>
+        <a href="/livro/manutLivro" class="btn btn-info mt-4 ml-2">Retornar</a>
+      </form>
+
+      <div class="mt-3">
+        <template x-if="message">
+          <div :class="messageClass" x-text="message"></div>
+        </template>
       </div>
+
     </div>
-  </div>  
+  </div>
+
+</div>
+
+<script>
+function livroForm() {
+  return {
+    form: {
+      titulo: '',
+      autor: '',
+      editora: '',
+      isbn: '',
+      edicao: '',
+      ano_publicacao: '',
+      id_genero: '',
+      removido: false
+    },
+
+    message: '',
+    messageClass: '',
+
+    async insertForm() {
+      try {
+        const response = await fetch('/livro/insertLivro', {
+          method: 'POST',
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(this.form)
+        });
+
+        const result = await response.json();
+
+        if (result.status === "ok") {
+          alert("Livro cadastrado!");
+          this.resetForm();
+        } else {
+          this.message = `Erro: ${result.status}`;
+          this.messageClass = 'alert alert-danger';
+        }
+
+      } catch (error) {
+        this.message = `Erro de conexão: ${error.message}`;
+        this.messageClass = 'alert alert-danger';
+      }
+    },
+
+    resetForm() {
+      this.form = {
+        titulo: '',
+        autor: '',
+        editora: '',
+        isbn: '',
+        edicao: '',
+        ano_publicacao: '',
+        id_genero: '',
+        removido: false
+      };
+      this.message = false;
+    }
+  }
+}
+</script>
+{% endblock %}

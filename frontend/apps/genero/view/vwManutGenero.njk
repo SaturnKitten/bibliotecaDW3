@@ -1,33 +1,70 @@
 {% extends "templates/base.html" %}
 
 {% block content %}
-  <ol class="breadcrumb mb-2"><li class="breadcrumb-item active">{{title}}</li></ol>
-  <div class="row"><div class="col-xl-12">
-    <div class="card-header">Manutenção de Gêneros</div>
-    <div class="card-body">
-      <div style="margin-bottom:15px;"><a href="/genero/insertGenero" class="btn btn-primary">Inserir novo gênero</a></div>
 
-      <div style="background-color:#f8f9fa">
-        <table id="tabGenero" class="display" style="width:100%">
-          <thead><tr><th>Ação</th><th>Nome</th></tr></thead>
-          <tbody>
-            {% for reg in data %}
-              <tr>
-                <td>
-                  <a href="/genero/viewGenero/{{ reg.id }}" title="Visualizar"><i class="fas fa-search"></i></a>
-                  <a href="/genero/updateGenero/{{ reg.id }}" title="Atualizar" style="margin-left:10px;"><i class="fas fa-pencil-alt"></i></a>
-                </td>
-                <td>{{ reg.nome }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+  <ol class="breadcrumb mb-2">
+    <li class="breadcrumb-item active">{{title}}</li>
+  </ol>
+  <div class="row">
+    <div class="col-xl-12">
+
+      <div class="card-header">
+        Manutenção de Gêneros
       </div>
 
+      <div class="card-body">
+        <div class="">
+          <div style="margin-bottom: 15px;">
+            <a href="/genero/insertGenero" class="btn btn-primary">
+              Inserir novo gênero
+            </a>
+          </div>
+
+          <div style="background-color: #f8f9fa">
+            <table id="tabGenero" class="display" style="width:100%">
+              <thead>
+                <tr>
+                  <th>Ação</th>
+                  <th>ID</th>
+                  <th>Descrição</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for reg in data %}
+                  <tr>
+                    <td>
+                      <a href="/genero/viewGenero/{{ reg.generoid }}" title="Visualizar">
+                        <i class="fas fa-search"></i>
+                      </a>
+
+                      <a href="/genero/updateGenero/{{ reg.generoid }}" title="Atualizar" style="margin-left: 10px;">
+                        <i class="fas fa-pencil-alt"></i>
+                      </a>
+                    </td>
+                    <td>{{reg.generoid}}</td>
+                    <td>{{reg.descricao}}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
     </div>
-  </div></div>
+  </div>
 
   <script>
-    window.onload=function(){ windowOnLoad(); const localErro="{{erro}}"; if(localErro!="") alert("[vwGenero|onload]Servidor retornou o erro:"+localErro); new DataTable('#tabGenero'); };
+    window.onload = function () {
+      windowOnLoad();
+
+      const localErro = "{{erro}}";
+      if (localErro != "") {
+        alert("[vwManutGenero|onload]Erro:" + localErro);
+      }
+
+      new DataTable('#tabGenero');
+    };
   </script>
+
 {% endblock %}

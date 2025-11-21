@@ -5,6 +5,7 @@
   <ol class="breadcrumb mb-2">
     <li class="breadcrumb-item active">{{title}}</li>
   </ol>
+
   <div class="row">
     <div class="col-xl-12">
 
@@ -14,9 +15,10 @@
 
       <div class="card-body">
         <div class="">
+
           <div style="margin-bottom: 15px;">
             <a href="/emprestimo/insertEmprestimo" class="btn btn-primary">
-              Inserir novo empréstimo
+              Registrar novo empréstimo
             </a>
           </div>
 
@@ -25,21 +27,58 @@
               <thead>
                 <tr>
                   <th>Ação</th>
+                  <th>ID</th>
                   <th>Livro</th>
-                  <th>Locador</th>
+                  <th>Leitor</th>
                   <th>Data Locação</th>
                   <th>Data Vencimento</th>
                   <th>Valor</th>
+                  <th>Descrição</th>
                 </tr>
               </thead>
               <tbody>
                 {% for reg in data %}
                   <tr>
+
                     <td>
-                      {# Visualizar #}
                       <a href="/emprestimo/viewEmprestimo/{{ reg.id }}" title="Visualizar">
                         <i class="fas fa-search"></i>
                       </a>
 
-                      {# Atualizar #}
-                      <a href="/emprestimo/updateEmprestimo/{{ reg.id }}" title="Atualizar" style="margin-le
+                      <a href="/emprestimo/updateEmprestimo/{{ reg.id }}" title="Atualizar" style="margin-left: 10px;">
+                        <i class="fas fa-pencil-alt"></i>
+                      </a>
+                    </td>
+
+                    <td>{{reg.id}}</td>
+                    <td>{{reg.livro_descricao}}</td>
+                    <td>{{reg.leitor_nome}}</td>
+                    <td>{{reg.dtlocacao}}</td>
+                    <td>{{reg.dtvencimento}}</td>
+                    <td>{{reg.valor}}</td>
+                    <td>{{reg.obs}}</td>
+
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    window.onload = function () {
+      windowOnLoad();
+      const localErro = "{{erro}}";
+      if (localErro != "") {
+        alert("[vwManutEmprestimo|onload]Erro:" + localErro);
+      }
+      new DataTable('#tabEmprestimo');
+    };
+  </script>
+
+{% endblock %}
