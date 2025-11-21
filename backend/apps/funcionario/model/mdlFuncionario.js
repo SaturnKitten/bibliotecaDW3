@@ -15,23 +15,23 @@ const getFuncionarioById = async (idFuncionarioPar) => {
 
 // Função para inserir um novo funcionário
 const insertFuncionario = async (dadosFuncionario) => {
-    const { nome, username, email, senha } = dadosFuncionario;
+    const { nome, username, email, password } = dadosFuncionario;
     
     // Hash da senha antes de salvar
     const saltRounds = 10;
-    const senhaHash = await bcrypt.hash(senha, saltRounds);
+    const passwordHash = await bcrypt.hash(password, saltRounds);
 
-    const query = `INSERT INTO funcionario (nome, username, email, senha)
-    VALUES ($1, $2, $3, $4) RETURNING id, nome, username, email;`;
+    const query = `INSERT INTO funcionario (nome, username, email, password)
+        VALUES ($1, $2, $3, $4) RETURNING id, nome, username, email;`;
 
-    const values = [nome, username, email, senhaHash];
+    const values = [nome, username, email, passwordHash];
     const { rows } = await db.query(query, values);
     return rows[0];
 }
 
 // Função para atualizar um funcionário existente
 const updateFuncionario = async (idFuncionarioPar, dadosFuncionario) => {
-    const { nome, username, email, senha } = dadosFuncionario;
+    const { nome, username, email, password } = dadosFuncionario;
     
     let setClauses = [];
     let values = [];
@@ -49,11 +49,11 @@ const updateFuncionario = async (idFuncionarioPar, dadosFuncionario) => {
         setClauses.push(`email = $${paramIndex++}`);
         values.push(email);
     }
-    if (senha !== undefined) {
+    if (password !== undefined) {
         const saltRounds = 10;
-        const senhaHash = await bcrypt.hash(senha, saltRounds);
-        setClauses.push(`senha = $${paramIndex++}`);
-        values.push(senhaHash);
+        const passwordHash = await bcrypt.hash(password, saltRounds);
+        setClauses.push(`password = $${paramIndex++}`);
+        values.push(passwordHash);
     }
     if (setClauses.length === 0) {
         return null;
@@ -63,9 +63,9 @@ const updateFuncionario = async (idFuncionarioPar, dadosFuncionario) => {
     const idIndex = paramIndex;
 
     const query = `UPDATE funcionario 
-    SET ${setClauses.join(', ')}
-    WHERE id = $${idIndex} AND removido = false
-    RETURNING id, nome, username, email;`;
+        SET ${setClauses.join(', ')}
+        WHERE id = $${idIndex} AND removido = false
+        RETURNING id, nome, username, email;`;
 
     const { rows } = await db.query(query, values);
     return rows[0];
@@ -73,7 +73,11 @@ const updateFuncionario = async (idFuncionarioPar, dadosFuncionario) => {
 
 // Função para soft delete de um funcionário
 const deleteFuncionario = async (idFuncionarioPar) => {
-    const query = `UPDATE funcionario SET removido = true WHERE id = $1 RETURNING id, nome, username, email;`;
+    const query = `UPDATE funcionario
+        SET removido = true
+        WHERE id = $1
+        RETURNING id, nome, username, email;`;
+        
     const values = [idFuncionarioPar];
     const { rows } = await db.query(query, values);
     return rows[0];

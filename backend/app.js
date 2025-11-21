@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 require('dotenv').config();
 
+
 //Importação do roteador
 const router = require('./routes/router');
 

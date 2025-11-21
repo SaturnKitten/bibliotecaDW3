@@ -7,7 +7,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 -- Cria tabela de gêneros literários
 CREATE TABLE IF NOT EXISTS genero(
     id SERIAL PRIMARY KEY,
-    nome VARCHAR NOT NULL,
+    nome VARCHAR(255) NOT NULL UNIQUE,
     removido BOOLEAN NOT NULL DEFAULT FALSE
 );
 
@@ -84,10 +84,16 @@ INSERT INTO leitor (nome, email, cpf, data_nascimento) VALUES
 ('Ana Silva', 'ana.silva@example.com', '123.456.789-00', '1990-01-01'),
 ('Bruno Souza', 'bruno.souza@example.com', '987.654.321-00', '1985-05-15');
 
--- Inserir funcionários na tabela funcionario
+/* Inserir funcionários na tabela funcionario*/
+
+-- Insere o Administrador Principal
 INSERT INTO funcionario (nome, username, password, email) VALUES
 ('admin', 'admin', crypt('admin', gen_salt('bf')), 'admin@admin.com')
 ON CONFLICT DO NOTHING;
+
+-- Insere um Funcionário que será removido (para testar o filtro getAllFuncionario)
+INSERT INTO funcionario (nome, username, password, email, removido)
+VALUES ('Joaquim da Silva', 'joaquims', 'silva123', 'joaquim@biblioteca.org', TRUE);
 
 --- Comandos para testes ---
 /* Deleta as tabelas criadas

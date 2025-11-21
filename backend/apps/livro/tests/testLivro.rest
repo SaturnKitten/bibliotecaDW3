@@ -1,0 +1,70 @@
+### Necessário para pegar o token 
+# @name loginAutenticado
+POST http://localhost:40000/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "admin", 
+    "password": "admin"
+}
+
+### Seta o token
+@accessToken = {{loginAutenticado.response.body.$.token}}
+@username = {{loginAutenticado.response.body.$.username}}
+
+### TESTE DE INSERÇÃO DE LIVRO
+POST http://localhost:40000/insertLivro HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "titulo": "Livro Exemplo",
+    "autor": "Autor Exemplo",
+    "editora": "Editora Exemplo",
+    "isbn": "1234567890123",
+    "edicao": "1ª",
+    "ano_publicacao": 2024,
+    "id_genero": 1
+}
+
+### TESTE DE BUSCAR TODOS OS LIVROS
+GET http://localhost:40000/getAllLivro HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+}
+
+### TESTE DE BUSCAR LIVRO POR ID
+POST http://localhost:40000/getLivroById HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "id": 4
+}
+
+### TESTE DE ATUALIZAÇÃO DE LIVRO
+POST http://localhost:40000/updateLivro HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "id": 4,
+    "titulo": "Livro Exemplo Atualizado",
+    "autor": "Autor Exemplo Atualizado",
+    "editora": "Editora Exemplo Atualizada",
+    "isbn": "1234567890124",
+    "edicao": "2ª",
+    "ano_publicacao": 2025,
+    "id_genero": 2
+}
+
+### TESTE DE SOFT DELETE DE LIVRO
+POST http://localhost:40000/deleteLivro HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "id": 4
+}

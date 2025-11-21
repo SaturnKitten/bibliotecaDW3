@@ -1,0 +1,64 @@
+### Necessário para pegar o token 
+# @name loginAutenticado
+POST http://localhost:40000/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "admin", 
+    "password": "admin"
+}
+
+### Seta o token
+@accessToken = {{loginAutenticado.response.body.$.token}}
+@username = {{loginAutenticado.response.body.$.username}}
+
+### TESTE DE INSERÇÃO DE LEITOR
+POST http://localhost:40000/insertLeitor HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "nome": "João Silva",
+    "email": "joao.silva@example.com",
+    "cpf": "12345678900",
+    "data_nascimento": "1990-01-01"
+}
+
+### TESTE DE BUSCAR TODOS OS LEITORES
+GET http://localhost:40000/getAllLeitor HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+}
+
+### TESTE DE BUSCAR LEITOR POR ID
+POST http://localhost:40000/getLeitorById HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "id": 3
+}
+
+### TESTE DE ATUALIZAÇÃO DE LEITOR
+POST http://localhost:40000/updateLeitor HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "id": 3,
+    "nome": "João Silva Atualizado",
+    "email": "joao.silva.atualizado@example.com",
+    "cpf": "12345678901",
+    "data_nascimento": "1990-01-01"
+}
+
+### TESTE DE SOFT DELETE DE LEITOR
+POST http://localhost:40000/deleteLeitor HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "id": 3
+}
