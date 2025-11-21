@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var alunosApp = require("../apps/emprestimo/controller/ctlEmprestimo");
+var emprestimoApp = require("../apps/emprestimo/controller/ctlEmprestimo");
 
 
 
@@ -16,16 +16,16 @@ function authenticationMiddleware(req, res, next) {
 }; 
   
 /* GET métodos */
-router.get('/manutEmprestimo', authenticationMiddleware, alunosApp.manutAlunos)
-router.get('/insertEmprestimo', authenticationMiddleware, alunosApp.insertAlunos);
-router.get('/viewEmprestimo/:id', authenticationMiddleware, alunosApp.ViewAlunos);
-router.get('/updateEmprestimo/:id', authenticationMiddleware, alunosApp.UpdateAluno);
+router.get('/manutEmprestimo', authenticationMiddleware, emprestimoApp.manutEmprestimo)
+router.get('/insertEmprestimo', authenticationMiddleware, emprestimoApp.insertEmprestimo);
+router.get('/viewEmprestimo/:id', authenticationMiddleware, emprestimoApp.viewEmprestimo);
+router.get('/updateEmprestimo/:id', authenticationMiddleware, emprestimoApp.updateEmprestimo);
 
 /* POST métodos */
-router.post('/insertEmprestimo', authenticationMiddleware, alunosApp.insertAlunos);
-router.post('/updateEmprestimo', authenticationMiddleware, alunosApp.UpdateAluno);
-router.post('/deleteEmprestimo', authenticationMiddleware, alunosApp.DeleteAluno);
-// router.post('/viewAlunos', authenticationMiddleware, alunosApp.viewAlunos);
+router.post('/insertEmprestimo', authenticationMiddleware, emprestimoApp.insertEmprestimo);
+router.post('/updateEmprestimo', authenticationMiddleware, emprestimoApp.updateEmprestimo);
+router.post('/deleteEmprestimo', authenticationMiddleware, emprestimoApp.deleteEmprestimo);
+// router.post('/viewEmprestimo', authenticationMiddleware, emprestimoApp.viewEmprestimo);
 
 
 module.exports = router;
