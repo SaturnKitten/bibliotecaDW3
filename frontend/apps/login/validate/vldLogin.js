@@ -1,46 +1,42 @@
-var validate = require("validate.js");
-
+const validate = require("validate.js");
 
 const constraints = {
-  UserName: {
-    presence: true,
-      length: {
-          minimum: 1,
-          message: " é obrigatório!"
-      }            
+  username: {
+    presence: {
+      allowEmpty: false,
+      message: "^O campo usuário é obrigatório."
+    },
+    length: {
+      minimum: 1,
+      message: "^O campo usuário é obrigatório."
+    }
   },
-  Password: {     
-      length: {
-          minimum: 1,
-          message: " é obrigatório!"
-      }
-  },  
+
+  password: {
+    presence: {
+      allowEmpty: false,
+      message: "^O campo senha é obrigatório."
+    },
+    length: {
+      minimum: 1,
+      message: "^O campo senha é obrigatório."
+    }
+  }
 };
 
 
-function Validar(formDataPar) {
+function Validar(formData) {
+  // validate.js retorna "undefined" quando NÃO há erro
+  const errors = validate(formData, constraints);
 
-    
-    // Perform validation
+  if (errors) {
+    return false;
+  }
 
-    // Convert FormData to plain object
-    // let formDataObject = {};
-    // for (let [key, value] of formDataPar.entries()) {
-    //     formDataObject[key] = value;
-    // }
-    const errors = validate(formDataPar, constraints);
-
-    // Display validation errors if any
-    if (errors) {
-        const errorMessages = Object.values(errors).flat();            
-        //alert(errorMessages[0]);
-        return false;
-    }
-    return true;
+  return true;
 }
-
 
 module.exports = {
   constraints,
-  Validar,
+  Validar
 };
