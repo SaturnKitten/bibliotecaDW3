@@ -6,7 +6,7 @@ const moment = require("moment");
 
 const manutEmprestimo = async (req, res) =>
   (async () => {
-    const userName = req.session.userName;
+    const userName = req.session.username;
     const token = req.session.token;
 
     const resp = await axios.get(process.env.bibliotecaDW3 + "/getAllEmprestimo", {
