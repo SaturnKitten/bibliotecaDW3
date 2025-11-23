@@ -4,7 +4,7 @@ const moment = require("moment");
 
 const manutLeitor = async (req, res) =>
   (async () => {
-    const userName = req.session.userName;
+    const username = req.session.username;
     const token = req.session.token;
 
     const resp = await axios.get(process.env.bibliotecaDW3 + "/getAllLeitor", {
@@ -15,18 +15,18 @@ const manutLeitor = async (req, res) =>
       else if (error.code === "ERR_BAD_REQUEST") remoteMSG = "Usuário não autenticado";
       else remoteMSG = error;
 
-      return res.render("leitor/view/vwManutLeitor.njk", { title: "Manutenção de leitores", data: null, erro: remoteMSG, userName });
+      return res.render("leitor/view/vwManutLeitor.njk", { title: "Manutenção de leitores", data: null, erro: remoteMSG, username });
     });
 
     if (!resp) return;
 
-    res.render("leitor/view/vwManutLeitor.njk", { title: "Manutenção de leitores", data: resp.data.registro, erro: null, userName });
+    res.render("leitor/view/vwManutLeitor.njk", { title: "Manutenção de leitores", data: resp.data.registro, erro: null, username });
   })();
 
 const insertLeitor = async (req, res) =>
   (async () => {
     if (req.method == "GET") {
-      return res.render("leitor/view/vwFCLeitor.njk", { title: "Cadastro de leitor", data: null, erro: null, userName: null });
+      return res.render("leitor/view/vwFCLeitor.njk", { title: "Cadastro de leitor", data: null, erro: null, username: null });
     } else {
       const regData = req.body;
       const token = req.session.token;
@@ -63,7 +63,7 @@ const viewLeitor = async (req, res) =>
 
         if (response.data.status == "ok") {
           response.data.registro[0].data_nascimento = moment(response.data.registro[0].data_nascimento).format("YYYY-MM-DD");
-          res.render("leitor/view/vwFRUDrLeitor.njk", { title: "Visualização de leitor", data: response.data.registro[0], disabled: true, userName: req.session.userName });
+          res.render("leitor/view/vwFRUDrLeitor.njk", { title: "Visualização de leitor", data: response.data.registro[0], disabled: true, username: req.session.username });
         } else console.log("[ctlLeitor|viewLeitor] ID não localizado.");
       }
     } catch (erro) {
@@ -86,7 +86,7 @@ const updateLeitor = async (req, res) =>
 
         if (response.data.status == "ok") {
           response.data.registro[0].data_nascimento = moment(response.data.registro[0].data_nascimento).format("YYYY-MM-DD");
-          res.render("leitor/view/vwFRUDrLeitor.njk", { title: "Atualização de leitor", data: response.data.registro[0], disabled: false, userName: req.session.userName });
+          res.render("leitor/view/vwFRUDrLeitor.njk", { title: "Atualização de leitor", data: response.data.registro[0], disabled: false, username: req.session.username });
         }
       } else {
         const regData = req.body;

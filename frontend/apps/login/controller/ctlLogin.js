@@ -1,18 +1,15 @@
 const axios = require("axios");
 const validate = require("../validate/vldLogin"); // valida username e password
 
-// ----------------------------------------------------------------------
 // LOGIN
-// ----------------------------------------------------------------------
 const Login = async (req, res) => {
   let remoteMSG = "sem mais informações";
 
   if (req.method === "POST") {
     const formData = req.body;
 
-    // -------------------------------
-    // 1) Validação de entrada
-    // -------------------------------
+
+    // Validação de entrada
     if (!validate.Validar(formData)) {
       return res.status(400).json({
         status: "error",
@@ -20,9 +17,7 @@ const Login = async (req, res) => {
       });
     }
 
-    // -------------------------------
-    // 2) Enviar login ao servidor Back
-    // -------------------------------
+    // Enviar login ao servidor Back
     let resp;
     try {
 
@@ -63,9 +58,7 @@ const Login = async (req, res) => {
       });
     }
 
-    // -------------------------------
-    // 3) Verificar retorno
-    // -------------------------------
+    // Verificar retorno
     if (!resp || !resp.data || !resp.data.token) {
       return res.status(400).json({
         status: "error",
@@ -73,12 +66,11 @@ const Login = async (req, res) => {
       });
     }
 
-    // -------------------------------
-    // 4) Armazenar sessão do usuário
-    // -------------------------------
+
+    // Armazenar sessão do usuário
     const session = req.session;
     session.isLogged = true;
-    session.userName = resp.data.username;
+    session.username = resp.data.username;
     session.token = resp.data.token;
     session.tokenRefresh = resp.data.tokenRefresh;
     session.tempoInativoMaximoFront = process.env.tempoInativoMaximoFront;

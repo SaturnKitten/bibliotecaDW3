@@ -2,64 +2,84 @@
   <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
     <div class="sb-sidenav-menu">
       <div class="nav">
+
         <div class="sb-sidenav-menu-heading">Principal</div>
         <a class="nav-link" href="/">
-          <div class="sb-nav-link-icon">
-            <i class="fas fa-tachometer-alt"></i>
-          </div>
+          <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
           Home
         </a>
-        
-        <!-- Módulo acadêmico -->
-        <div>
-          <div class="sb-sidenav-menu-heading">Acadêmico</div>
 
-          <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages"
-            aria-expanded="false" aria-controls="collapsePages">
-            <div class="sb-nav-link-icon">
-              <i class="fas fa-book-open"></i>
-            </div>
-            Acadêmico
-            <div class="sb-sidenav-collapse-arrow">
-              <i class="fas fa-angle-down"></i>
-            </div>
-          </a>
-          <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
-            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
-              <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth"
-                aria-expanded="false" aria-controls="pagesCollapseAuth">
-                Alunos
-                <div class="sb-sidenav-collapse-arrow">
-                  <i class="fas fa-angle-down"></i>
-                </div>
-              </a>
-              <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne"
-                data-bs-parent="#sidenavAccordionPages">
-                <nav class="sb-sidenav-menu-nested nav">
-                  <a class="nav-link" href="/alunos/ManutAlunos">Manutenção de alunos</a>
-                </nav>
-              </div>
-              <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseError"
-                aria-expanded="false" aria-controls="pagesCollapseError">
-                Cursos
-                <div class="sb-sidenav-collapse-arrow">
-                  <i class="fas fa-angle-down"></i>
-                </div>
-              </a>
-              <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne"
-                data-bs-parent="#sidenavAccordionPages">
-                <nav class="sb-sidenav-menu-nested nav">
-                  <a class="nav-link" href="/cursos">Manutenção de cursos</a>
-                </nav>
-              </div>
-            </nav>
-          </div>
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseFuncionario"
+          aria-expanded="false" aria-controls="collapseFuncionario">
+          <div class="sb-nav-link-icon"><i class="fas fa-user-tie"></i></div>
+          Funcionários
+          <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+        </a>
+        <div class="collapse" id="collapseFuncionario" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+          <nav class="sb-sidenav-menu-nested nav">
+            <a class="nav-link" href="/funcionario/manutFuncionario">Manutenção</a>
+            <a class="nav-link" href="/funcionario/insertFuncionario">Cadastrar Novo</a>
+          </nav>
         </div>
+
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLeitor"
+          aria-expanded="false" aria-controls="collapseLeitor">
+          <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+          Leitores
+          <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+        </a>
+        <div class="collapse" id="collapseLeitor" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+          <nav class="sb-sidenav-menu-nested nav">
+            <a class="nav-link" href="/leitor/manutLeitor">Manutenção</a>
+            <a class="nav-link" href="/leitor/insertLeitor">Cadastrar Novo</a>
+          </nav>
+        </div>
+
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLivro"
+          aria-expanded="false" aria-controls="collapseLivro">
+          <div class="sb-nav-link-icon"><i class="fas fa-book"></i></div>
+          Livros
+          <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+        </a>
+        <div class="collapse" id="collapseLivro" aria-labelledby="headingThree" data-bs-parent="#sidenavAccordion">
+          <nav class="sb-sidenav-menu-nested nav">
+            <a class="nav-link" href="/livro/manutLivro">Manutenção</a>
+            <a class="nav-link" href="/livro/insertLivro">Cadastrar Novo</a>
+          </nav>
+        </div>
+
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseGenero"
+          aria-expanded="false" aria-controls="collapseGenero">
+          <div class="sb-nav-link-icon"><i class="fas fa-tags"></i></div>
+          Gêneros
+          <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+        </a>
+        <div class="collapse" id="collapseGenero" aria-labelledby="headingFour" data-bs-parent="#sidenavAccordion">
+          <nav class="sb-sidenav-menu-nested nav">
+            <a class="nav-link" href="/generos/manutGenero">Manutençãos</a>
+            <a class="nav-link" href="/generos/insertGenero">Cadastrar Novo</a>
+          </nav>
+        </div>
+
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseEmprestimo"
+          aria-expanded="false" aria-controls="collapseEmprestimo">
+          <div class="sb-nav-link-icon"><i class="fas fa-hand-holding"></i></div>
+          Empréstimos
+          <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+        </a>
+        <div class="collapse" id="collapseEmprestimo" aria-labelledby="headingFive" data-bs-parent="#sidenavAccordion">
+          <nav class="sb-sidenav-menu-nested nav">
+            <a class="nav-link" href="/emprestimos/manutEmprestimo">Manutenção</a>
+            <a class="nav-link" href="/emprestimos/insertEmprestimo">Cadastrar Novo</a>
+          </nav>
+        </div>
+
       </div>
     </div>
+
     <div class="sb-sidenav-footer">
       <div class="small">Bem vindo:</div>
-        {{ parametros.Usuario }}      
+      {{ username }}
     </div>
   </nav>
 </div>

@@ -3,7 +3,7 @@ const axios = require("axios");
 
 const manutLivro = async (req, res) =>
   (async () => {
-    const userName = req.session.userName;
+    const username = req.session.username;
     const token = req.session.token;
 
     const resp = await axios.get(process.env.bibliotecaDW3 + "/getAllLivro", {
@@ -14,12 +14,12 @@ const manutLivro = async (req, res) =>
       else if (error.code === "ERR_BAD_REQUEST") remoteMSG = "Usuário não autenticado";
       else remoteMSG = error;
 
-      return res.render("livro/view/vwManutLivro.njk", { title: "Manutenção de livros", data: null, erro: remoteMSG, userName });
+      return res.render("livro/view/vwManutLivro.njk", { title: "Manutenção de livros", data: null, erro: remoteMSG, username });
     });
 
     if (!resp) return;
 
-    res.render("livro/view/vwManutLivro.njk", { title: "Manutenção de livros", data: resp.data.registro, erro: null, userName });
+    res.render("livro/view/vwManutLivro.njk", { title: "Manutenção de livros", data: resp.data.registro, erro: null, username });
   })();
 
 const insertLivro = async (req, res) =>
@@ -30,7 +30,7 @@ const insertLivro = async (req, res) =>
       const generos = await axios.get(process.env.bibliotecaDW3 + "/getAllGenero", {
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
       });
-      return res.render("livro/view/vwFCLivro.njk", { title: "Cadastro de livro", data: null, erro: null, generos: generos.data.registro, userName: null });
+      return res.render("livro/view/vwFCLivro.njk", { title: "Cadastro de livro", data: null, erro: null, generos: generos.data.registro, username: null });
     } else {
       const regData = req.body;
       const token = req.session.token;
@@ -58,7 +58,7 @@ const insertLivro = async (req, res) =>
 
 const viewLivro = async (req, res) =>
   (async () => {
-    const userName = req.session.userName;
+    const username = req.session.username;
     const token = req.session.token;
     try {
       if (req.method == "GET") {
@@ -80,7 +80,7 @@ const viewLivro = async (req, res) =>
             data: response.data.registro[0],
             disabled: true,
             generos: generos.data.registro,
-            userName
+            username
           });
         } else console.log("[ctlLivro|viewLivro] ID não localizado.");
       }
@@ -112,7 +112,7 @@ const updateLivro = async (req, res) =>
             data: response.data.registro[0],
             disabled: false,
             generos: generos.data.registro,
-            userName: req.session.userName
+            username: req.session.username
           });
         }
       } else {

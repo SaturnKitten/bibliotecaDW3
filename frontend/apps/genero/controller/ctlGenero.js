@@ -3,7 +3,7 @@ const axios = require("axios");
 
 const manutGenero = async (req, res) =>
   (async () => {
-    const userName = req.session.userName;
+    const username = req.session.username;
     const token = req.session.token;
 
     const resp = await axios.get(process.env.bibliotecaDW3 + "/getAllGenero", {
@@ -14,18 +14,18 @@ const manutGenero = async (req, res) =>
       else if (error.code === "ERR_BAD_REQUEST") remoteMSG = "Usuário não autenticado";
       else remoteMSG = error;
 
-      return res.render("genero/view/vwManutGenero.njk", { title: "Manutenção de gêneros", data: null, erro: remoteMSG, userName });
+      return res.render("genero/view/vwManutGenero.njk", { title: "Manutenção de gêneros", data: null, erro: remoteMSG, username });
     });
 
     if (!resp) return;
 
-    res.render("genero/view/vwManutGenero.njk", { title: "Manutenção de gêneros", data: resp.data.registro, erro: null, userName });
+    res.render("genero/view/vwManutGenero.njk", { title: "Manutenção de gêneros", data: resp.data.registro, erro: null, username });
   })();
 
 const insertGenero = async (req, res) =>
   (async () => {
     if (req.method == "GET") {
-      return res.render("genero/view/vwFCGenero.njk", { title: "Cadastro de gênero", data: null, erro: null, userName: null });
+      return res.render("genero/view/vwFCGenero.njk", { title: "Cadastro de gênero", data: null, erro: null, username: null });
     } else {
       const regData = req.body;
       const token = req.session.token;
@@ -47,7 +47,7 @@ const insertGenero = async (req, res) =>
 
 const viewGenero = async (req, res) =>
   (async () => {
-    const userName = req.session.userName;
+    const username = req.session.username;
     const token = req.session.token;
     try {
       if (req.method == "GET") {
@@ -59,7 +59,7 @@ const viewGenero = async (req, res) =>
         });
 
         if (response.data.status == "ok") {
-          res.render("genero/view/vwFRUDrGenero.njk", { title: "Visualização de gênero", data: response.data.registro[0], disabled: true, userName });
+          res.render("genero/view/vwFRUDrGenero.njk", { title: "Visualização de gênero", data: response.data.registro[0], disabled: true, username });
         } else console.log("[ctlGenero|viewGenero] ID não localizado.");
       }
     } catch (erro) {
@@ -81,7 +81,7 @@ const updateGenero = async (req, res) =>
         });
 
         if (response.data.status == "ok") {
-          res.render("genero/view/vwFRUDrGenero.njk", { title: "Atualização de gênero", data: response.data.registro[0], disabled: false, userName: req.session.userName });
+          res.render("genero/view/vwFRUDrGenero.njk", { title: "Atualização de gênero", data: response.data.registro[0], disabled: false, username: req.session.username });
         }
       } else {
         const regData = req.body;

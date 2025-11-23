@@ -2,11 +2,9 @@ const axios = require("axios");
 const moment = require("moment");
 
 
-
-
 const manutEmprestimo = async (req, res) =>
   (async () => {
-    const userName = req.session.username;
+    const username = req.session.username;
     const token = req.session.token;
 
     const resp = await axios.get(process.env.bibliotecaDW3 + "/getAllEmprestimo", {
@@ -23,7 +21,7 @@ const manutEmprestimo = async (req, res) =>
         title: "Manutenção de emprestimos",
         data: null,
         erro: remoteMSG,
-        userName: userName,
+        username: username,
       });
     });
 
@@ -33,7 +31,7 @@ const manutEmprestimo = async (req, res) =>
       title: "Manutenção de emprestimos",
       data: resp.data.registro,
       erro: null,
-      userName: userName,
+      username: username,
     });
   })();
 
@@ -50,12 +48,12 @@ const insertEmprestimo = async (req, res) =>
         }
       });
 
-      return res.render("emprestimo/view/vwFCEmprestimo.njk", {
+      return res.render("emprestimo/view/vwFCrEmprestimo.njk", {
         title: "Cadastro de emprestimos",
         data: null,
         erro: null,
         curso: cursos.data.registro,
-        userName: null,
+        username: null,
       });
 
     } else {
@@ -98,7 +96,7 @@ const insertEmprestimo = async (req, res) =>
 
 const viewEmprestimo = async (req, res) =>
   (async () => {
-    const userName = req.session.userName;
+    const username = req.session.username;
     const token = req.session.token;
 
     try {
@@ -139,7 +137,7 @@ const viewEmprestimo = async (req, res) =>
             data: response.data.registro[0],
             disabled: true,
             curso: cursos.data.registro,
-            userName: userName,
+            username: username,
           });
 
         } else {
@@ -155,7 +153,7 @@ const viewEmprestimo = async (req, res) =>
 
 const updateEmprestimo = async (req, res) =>
   (async () => {
-    const userName = req.session.userName;
+    const username = req.session.username;
     const token = req.session.token;
 
     try {
@@ -194,7 +192,7 @@ const updateEmprestimo = async (req, res) =>
             data: response.data.registro[0],
             disabled: false,
             curso: cursos.data.registro,
-            userName: userName,
+            username: username,
           });
 
         }
