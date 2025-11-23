@@ -8,11 +8,7 @@
       <div class="col-12">
         <div class="card-header">{{ title }}</div>
         <div class="card-body">
-          <form>
-            {# <div class="form-group col-md-3">
-                        <label for="id">ID</label>
-                        <input type="text" id="id" class="form-control" x-model="form.id" x-bind:disabled="disabled">
-                      </div> #}
+          <form x-data="livroform">
             <div class="form-group col-md-6">
               <label for="titulo">Título</label>
               <input type="text" id="titulo" class="form-control" x-model="form.titulo" x-bind:disabled="disabled"></div>
@@ -61,8 +57,8 @@
                   }
                   $("#titulo").focus();
                 };
-                function livroForm() {
-                  return {
+                document.addEventListener('alpine:init', () => {
+                  Alpine.data('livroForm', () => ({
                     form: {
                       id: "{{ data.id }}",
                       titulo: "{{ data.titulo }}",
@@ -79,7 +75,7 @@
                     disabled: {{ disabled }},
                     async updateForm() {
                       try {
-                        const response = await fetch('/livro/UpdateLivro', {
+                        const response = await fetch('/livro/updateLivro', {
                           method: 'POST',
                           headers: {
                             "Content-Type": "application/json"
@@ -92,7 +88,7 @@
                           window.location.href = "/livro/manutLivro";
                         } else {
                           this.message = `Erro! ${
-                            result.status
+                            result.msg
                           }`;
                           this.messageClass = 'alert alert-danger';
                         }
@@ -109,20 +105,21 @@
                       }
                       try {
                         this.form.removido = true;
-                        const response = await fetch('/livro/DeleteLivro', {
+                        const response = await fetch('/livro/deleteLivro', {
                           method: 'POST',
                           headers: {
                             "Content-Type": "application/json"
                           },
-                          body: JSON.stringify(this.form)
+                          body: JSON.stringify(
+                          {id: this.form.id})
                         });
                         const result = await response.json();
                         if (result.status == "ok") {
-                          alert("Livro excluído (marcado como removido)");
+                          alert("Livro excluído com sucesso");
                           window.location.href = "/livro/manutLivro";
                         } else {
                           this.message = `Erro! ${
-                            result.status
+                            result.msg
                           }`;
                           this.messageClass = 'alert alert-danger';
                         }
@@ -133,7 +130,7 @@
                         this.messageClass = 'alert alert-danger';
                       }
                     }
-                  };
-                }
+                  }));
+                });
               </script>
             {% endblock %}

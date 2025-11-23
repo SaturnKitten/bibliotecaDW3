@@ -65,11 +65,11 @@ const updateLivro = async (idLivroPar, dadosLivro) => {
         setClauses.push(`edicao = $${paramIndex++}`);
         values.push(edicao);
     }
-    if (ano_publicacao !== undefined) {
+    if (ano_publicacao !== undefined && ano_publicacao !== "") {
         setClauses.push(`ano_publicacao = $${paramIndex++}`);
         values.push(ano_publicacao);
     }
-    if (id_genero !== undefined) {
+    if (id_genero !== undefined && id_genero !== "") {
         setClauses.push(`id_genero = $${paramIndex++}`);
         values.push(id_genero);
     }
