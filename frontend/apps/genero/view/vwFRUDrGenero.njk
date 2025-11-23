@@ -1,108 +1,112 @@
 {% extends "templates/base.html" %}
-
 {% block content %}
-<div x-data="generoForm()">
-  <ol class="breadcrumb mb-2">
-    <li class="breadcrumb-item active">{{title}}</li>
-  </ol>
-
-  <div class="row">
-    <div class="col-12">
-      <div class="card-header">
-        {{title}}
-      </div>
-
-      <div class="card-body">
-        <form>
-          <div class="form-group col-md-6">
-            <label for="id">ID</label>
-            <input type="text" id="id" class="form-control" x-model="form.id" x-bind:disabled="disabled">
-          </div>
-
-          <div class="form-group col-md-6">
-            <label for="nome">Nome</label>
-            <input type="text" id="nome" class="form-control" x-model="form.nome" x-bind:disabled="disabled">
-          </div>
-
-          <button type="button" @click="updateForm()" class="btn btn-primary mt-4">Salvar</button>
-          <button type="button" @click="deleteForm()" x-show="!disabled" class="btn btn-danger mt-4">Excluir</button>
-          <a href="/genero/manutGenero" class="btn btn-info mt-4 ml-2">Retornar</a>
-        </form>
-
-        <div class="mt-3">
-          <template x-if="message">
-            <div :class="messageClass" x-text="message"></div>
-          </template>
+  <div x-data="generoForm()">
+    <ol class="breadcrumb mb-2">
+      <li class="breadcrumb-item active">{{ title }}</li>
+    </ol>
+    <div class="row">
+      <div class="col-12">
+        <div class="card-header">
+          {{ title }}
         </div>
-
+        <div class="card-body">
+          <form>
+            {# <div class="form-group col-md-6">
+                        <label for="id">ID</label>
+                        <input type="text" id="id" class="form-control" x-model="form.id" x-bind:disabled="disabled">
+                      </div> #}
+            <div class="form-group col-md-6">
+              <label for="nome">Nome</label>
+              <input type="text" id="nome" class="form-control" x-model="form.nome" x-bind:disabled="disabled"></div>
+              <button type="button" @click="updateForm()" class="btn btn-primary mt-4">Salvar</button>
+              <button type="button" @click="deleteForm()" x-show="!disabled" class="btn btn-danger mt-4">Excluir</button>
+              <a href="/genero/manutGenero" class="btn btn-info mt-4 ml-2">Retornar</a>
+            </form>
+            <div class="mt-3">
+              <template x-if="message">
+                <div :class="messageClass" x-text="message"></div>
+              </template>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-
-<script>
-window.onload = function() {
-  windowOnLoad();
-  const localErro = "{{erro}}";
-  if (localErro != "") { alert("[vwFRUDrGenero|onload] Servidor retornou o erro:" + localErro); }
-  $("#nome").focus();
-};
-
-function generoForm() {
-  return {
-    form: {
-      id: "{{data.id}}",
-      nome: "{{data.nome}}",
-      removido: false
-    },
-    message: '',
-    messageClass: '',
-    disabled: {{disabled}},
-
-    async updateForm() {
-      try {
-        const response = await fetch('/genero/UpdateGenero', {
-          method: 'POST',
-          headers: {"Content-Type": "application/json"},
-          body: JSON.stringify(this.form)
-        });
-        const result = await response.json();
-        if (result.status == "ok") {
-          alert("Gênero atualizado com sucesso");
-        } else {
-          this.message = `Erro! ${result.status}`;
-          this.messageClass = 'alert alert-danger';
+    <script>
+      window.onload = function () {
+        windowOnLoad();
+        const localErro = "{{ erro }}";
+        if (localErro != "") {
+          alert("[vwFRUDrGenero|onload] Servidor retornou o erro:" + localErro);
         }
-      } catch (error) {
-        this.message = `Erro de conexão: ${error.message}`;
-        this.messageClass = 'alert alert-danger';
+        $("#nome").focus();
+      };
+      function generoForm() {
+        return {
+          form: {
+            id: "{{ data.id }}",
+            nome: "{{ data.nome }}",
+            removido: false
+          },
+          message: '',
+          messageClass: '',
+          disabled: {{ disabled }},
+          async updateForm() {
+            try {
+              const response = await fetch('/genero/UpdateGenero', {
+                method: 'POST',
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify(this.form)
+              });
+              const result = await response.json();
+              if (result.status == "ok") {
+                alert("Gênero atualizado com sucesso");
+                window.location.href = "/genero/manutGenero";
+              } else {
+                this.message = `Erro! ${
+                  result.status
+                }`;
+                this.messageClass = 'alert alert-danger';
+              }
+            } catch (error) {
+              this.message = `Erro de conexão: ${
+                error.message
+              }`;
+              this.messageClass = 'alert alert-danger';
+            }
+          },
+          async deleteForm() {
+            if (!confirm("Tem certeza que deseja excluir este registro? Esta ação não pode ser desfeita.")) {
+              return;
+            }
+            try { // marca removido = true e envia
+              this.form.removido = true;
+              const response = await fetch('/genero/DeleteGenero', {
+                method: 'POST',
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify(this.form)
+              });
+              const result = await response.json();
+              if (result.status == "ok") {
+                alert("Gênero excluído (marcado como removido)");
+                window.location.href = "/genero/manutGenero";
+              } else {
+                this.message = `Erro! ${
+                  result.status
+                }`;
+                this.messageClass = 'alert alert-danger';
+              }
+            } catch (error) {
+              this.message = `Erro de conexão: ${
+                error.message
+              }`;
+              this.messageClass = 'alert alert-danger';
+            }
+          }
+        };
       }
-    },
-
-    async deleteForm() {
-      try {
-        // marca removido = true e envia
-        this.form.removido = true;
-        const response = await fetch('/genero/DeleteGenero', {
-          method: 'POST',
-          headers: {"Content-Type": "application/json"},
-          body: JSON.stringify(this.form)
-        });
-        const result = await response.json();
-        if (result.status == "ok") {
-          alert("Gênero excluído (marcado como removido)");
-          window.location.href = "/genero/manutGenero";
-        } else {
-          this.message = `Erro! ${result.status}`;
-          this.messageClass = 'alert alert-danger';
-        }
-      } catch (error) {
-        this.message = `Erro de conexão: ${error.message}`;
-        this.messageClass = 'alert alert-danger';
-      }
-    }
-
-  };
-}
-</script>
-{% endblock %}
+    </script>
+  {% endblock %}

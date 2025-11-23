@@ -2,12 +2,12 @@ const mdlEmprestimo = require('../model/mdlEmprestimo');
 
 //Função para obter todos os empréstimos
 const getAllEmprestimo = async (req, res) => {
-    try{
+    try {
         const emprestimo = await mdlEmprestimo.getAllEmprestimo(); // Chama a função do modelo para obter todos os empréstimos
-        
-        res.json({status: "ok", registros: emprestimo}); // Retorna os empréstimos como resposta JSON
+
+        res.json({ status: "ok", registros: emprestimo }); // Retorna os empréstimos como resposta JSON
     }
-    catch(error){
+    catch (error) {
         console.error("Erro no getAllEmprestimo: ", error);
         res.status(500).json({ status: "error", mensagem: "Erro ao buscar empréstimos no servidor." });
     }
@@ -15,89 +15,103 @@ const getAllEmprestimo = async (req, res) => {
 
 //Função para obter um empréstimo pelo ID
 const getEmprestimoById = async (req, res) => {
-    try{
-        const idEmprestimo = parseInt(req.params.id); // Obtém o ID do empréstimo dos parâmetros da rota
+    try {
+        const idEmprestimo = parseInt(req.body.id);
+
+        if (isNaN(idEmprestimo) || idEmprestimo <= 0) {
+            return res.status(400).json({ status: "error", mensagem: "ID inválido." });
+        }
 
         const emprestimo = await mdlEmprestimo.getEmprestimoById(idEmprestimo); // Chama a função do modelo para obter o empréstimo pelo ID
-        
+
         // Verifica se o empréstimo foi encontrado
-        if(!emprestimo){
+        if (!emprestimo) {
             return res.status(404).json({ error: 'Empréstimo não encontrado' });
         }
         // Retorna o empréstimo encontrado como resposta JSON
-        res.json({status: "ok", registro: emprestimo});
+        res.json({ status: "ok", registro: emprestimo });
     }
-    catch(error){
-        console.error("Erro no getEmprestimoById: ", error);
+    catch (error) {
+        console.error("Erro no getEmprestimoByID: ", error);
         res.status(500).json({ status: "error", mensagem: "Erro ao buscar empréstimo no servidor." });
     }
 }
 
 //Função para inserir um novo empréstimo
 const insertEmprestimo = async (req, res) => {
-    try{
+    try {
         const dadosEmprestimo = req.body;
-        const {id_livro, id_leitor, data_vencimento} = dadosEmprestimo;
+        const { id_livro, id_leitor, data_vencimento, multa_atraso} = dadosEmprestimo;
 
         // Validação básica dos dados recebidos
-        if(!id_livro || !id_leitor || !data_vencimento){
+        if (!id_livro || !id_leitor || !data_vencimento || !multa_atraso) {
             return res.status(400).json({ status: "error", mensagem: "Dados incompletos para inserir o empréstimo." });
         }
 
         const novoEmprestimo = await mdlEmprestimo.insertEmprestimo(dadosEmprestimo); // Chama a função do modelo para inserir o empréstimo
         res.json({ status: "ok", mensagem: "Empréstimo inserido com sucesso", registro: novoEmprestimo }); // Retorna o novo empréstimo como resposta JSON
     }
-    catch(error){
+    catch (error) {
         console.error("Erro no insertEmprestimo: ", error);
+        if (error.code === '23503') { // Erro de chave estrangeira
+            return res.status(400).json({ status: "error", mensagem: "Livro ou Leitor não encontrados." });
+        }
         res.status(500).json({ status: "error", mensagem: "Erro ao inserir empréstimo no servidor." });
     }
 }
 
 //Função para atualizar um empréstimo existente
 const updateEmprestimo = async (req, res) => {
-    try{
-        const idEmprestimo = parseInt(req.params.id); // Obtém o ID do empréstimo dos parâmetros da rota
-        const dadosEmprestimo = req.body;
-        
-        if(idEmprestimo <= 0){
-            return res.status(400).json({ status: "error", mensagem: "ID do empréstimo inválido." });
+    try {
+        const idEmprestimo = parseInt(req.body.id);
+
+        if (isNaN(idEmprestimo) || idEmprestimo <= 0) {
+            return res.status(400).json({ status: "error", mensagem: "ID inválido." });
         }
-        if(Object.keys(dadosEmprestimo).length === 0){
+
+        // Remove o ID dos dados para atualizar
+        const { id, ...dadosParaAtualizar } = req.body;
+
+        if (Object.keys(dadosParaAtualizar).length === 0) {
             return res.status(400).json({ status: "error", mensagem: "Nenhum dado fornecido para atualização." });
         }
 
-        const emprestimoAtualizado = await mdlEmprestimo.updateEmprestimo(idEmprestimo, dadosEmprestimo); // Chama a função do modelo para atualizar o empréstimo
+        const emprestimoAtualizado = await mdlEmprestimo.updateEmprestimo(idEmprestimo, dadosParaAtualizar); // Chama a função do modelo para atualizar o empréstimo
 
-        if(!emprestimoAtualizado){
+        if (!emprestimoAtualizado) {
             return res.status(404).json({ status: "error", mensagem: "Empréstimo não encontrado." });
         }
         res.json({ status: "ok", mensagem: "Empréstimo atualizado com sucesso", registro: emprestimoAtualizado });
     }
-    catch(error){
+    catch (error) {
         console.error("Erro no updateEmprestimo: ", error);
+
+        if (error.code === '23503') {
+            return res.status(400).json({ status: "error", mensagem: "Livro ou Leitor inválidos." });
+        }
+
         res.status(500).json({ status: "error", mensagem: "Erro ao atualizar empréstimo no servidor." });
     }
 }
 
 //Função para soft delete de um empréstimo
 const deleteEmprestimo = async (req, res) => {
-    try{
-        const idEmprestimo = parseInt(req.params.id); // Obtém o ID do empréstimo dos parâmetros da rota
-
-        if(idEmprestimo <= 0){
-            return res.status(400).json({ status: "error", mensagem: "ID do empréstimo inválido." });
+    try {
+        const idEmprestimo = parseInt(req.body.id);
+        if (isNaN(idEmprestimo) || idEmprestimo <= 0) {
+            return res.status(400).json({ status: "error", mensagem: "ID inválido." });
         }
 
         const rowCount = await mdlEmprestimo.deleteEmprestimo(idEmprestimo); // Chama a função do modelo para deletar o empréstimo
 
-        if(rowCount === 0){
+        if (rowCount === 0) {
             return res.status(404).json({ status: "error", mensagem: "Empréstimo não encontrado ou já foi removido." });
         }
 
         res.status(204).send(); // Retorna status 204 No Content para indicar sucesso sem corpo de resposta
-            
+
     }
-    catch(error){
+    catch (error) {
         console.error("Erro no deleteEmprestimo: ", error);
         res.status(500).json({ status: "error", mensagem: "Erro ao deletar empréstimo no servidor." });
     }

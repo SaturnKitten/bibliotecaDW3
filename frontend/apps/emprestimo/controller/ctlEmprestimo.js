@@ -1,290 +1,252 @@
 const axios = require("axios");
 const moment = require("moment");
 
+const axiosConfig = (token) => ({
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`
+  },
+  timeout: 5000
+});
 
-const manutEmprestimo = async (req, res) =>
-  (async () => {
-    const username = req.session.username;
-    const token = req.session.token;
+// Manutenção
+const manutEmprestimo = async (req, res) => {
+  const username = req.session.username;
+  const token = req.session.token;
 
-    const resp = await axios.get(process.env.bibliotecaDW3 + "/getAllEmprestimo", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      }
-    }).catch(error => {
-      if (error.code === "ECONNREFUSED") remoteMSG = "Servidor indisponível";
-      else if (error.code === "ERR_BAD_REQUEST") remoteMSG = "Usuário não autenticado";
-      else remoteMSG = error;
-
-      return res.render("emprestimo/view/vwManutEmprestimo.njk", {
-        title: "Manutenção de emprestimos",
-        data: null,
-        erro: remoteMSG,
-        username: username,
-      });
-    });
-
-    if (!resp) return;
+  try {
+    const resp = await axios.get(process.env.SERVIDOR_BIBLIOTECA_BACK + "/getAllEmprestimo", axiosConfig(token));
 
     res.render("emprestimo/view/vwManutEmprestimo.njk", {
-      title: "Manutenção de emprestimos",
-      data: resp.data.registro,
+      title: "Manutenção de Empréstimos",
+      data: resp.data.registros,
       erro: null,
       username: username,
     });
-  })();
+  }
+  catch (error) {
+    console.error('[manutEmprestimo] Erro:', error.message);
+    const remoteMSG = error.code === "ECONNREFUSED" ? "Servidor indisponível" : error.message;
 
+    res.render("emprestimo/view/vwManutEmprestimo.njk", {
+      title: "Manutenção de Empréstimos",
+      data: null,
+      erro: remoteMSG,
+      username: username,
+    });
+  }
+};
 
-const insertEmprestimo = async (req, res) =>
-  (async () => {
-    if (req.method == "GET") {
-      const token = req.session.token;
+// Inserir
+const insertEmprestimo = async (req, res) => {
+  const token = req.session.token;
+  const username = req.session.username;
 
-      const cursos = await axios.get(process.env.bibliotecaDW3 + "/GetAll", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        }
-      });
+  if (req.method == "GET") {
+    try {
+      const respLivros = await axios.get(process.env.SERVIDOR_BIBLIOTECA_BACK + "/getAllLivro", axiosConfig(token));
+      const respLeitores = await axios.get(process.env.SERVIDOR_BIBLIOTECA_BACK + "/getAllLeitor", axiosConfig(token));
 
-      return res.render("emprestimo/view/vwFCrEmprestimo.njk", {
-        title: "Cadastro de emprestimos",
+      res.render("emprestimo/view/vwFCrEmprestimo.njk", {
+        title: "Cadastro de Empréstimo",
         data: null,
         erro: null,
-        curso: cursos.data.registro,
-        username: null,
-      });
-
-    } else {
-      const regData = req.body;
-      const token = req.session.token;
-
-      try {
-        const response = await axios.post(process.env.bibliotecaDW3 + "/insertEmprestimo", {
-          id_livro: regData.id_livro,
-          id_leitor: regData.id_leitor,
-          data_emprestimo: regData.data_emprestimo,
-          data_vencimento: regData.data_vencimento,
-          status: regData.status,
-          multa_atraso: regData.multa_atraso
-        }, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          timeout: 5000,
-        });
-
-        res.json({
-          status: response.data.status,
-          msg: response.data.status,
-          data: response.data,
-          erro: null,
-        });
-
-      } catch (error) {
-        console.error('Erro ao inserir dados no servidor backend:', error.message);
-        res.json({
-          status: "Error",
-          msg: error.message,
-          erro: null,
-        });
-      }
-    }
-  })();
-
-const viewEmprestimo = async (req, res) =>
-  (async () => {
-    const username = req.session.username;
-    const token = req.session.token;
-
-    try {
-      if (req.method == "GET") {
-        const id = req.params.id;
-        oper = req.params.oper;
-        parseInt(id);
-
-        response = await axios.post(
-          process.env.bibliotecaDW3 + "/getEmprestimoByID",
-          { emprestimoid: id },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + token,
-            },
-          }
-        );
-
-        if (response.data.status == "ok") {
-
-          const cursos = await axios.get(process.env.bibliotecaDW3 + "/GetAll", {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`
-            }
-          });
-
-          // datas formatadas
-          response.data.registro[0].data_emprestimo =
-            moment(response.data.registro[0].data_emprestimo).format("YYYY-MM-DD");
-
-          response.data.registro[0].data_vencimento =
-            moment(response.data.registro[0].data_vencimento).format("YYYY-MM-DD");
-
-          res.render("emprestimo/view/vwFRUDrEmprestimo.njk", {
-            title: "Visualização de emprestimos",
-            data: response.data.registro[0],
-            disabled: true,
-            curso: cursos.data.registro,
-            username: username,
-          });
-
-        } else {
-          console.log("[ctlEmprestimo|ViewEmprestimo] ID não localizado!");
-        }
-      }
-    } catch (erro) {
-      res.json({ status: "[ctlEmprestimo.js|ViewEmprestimo] Emprestimo não localizado!" });
-      console.log("Erro:", erro);
-    }
-  })();
-
-
-const updateEmprestimo = async (req, res) =>
-  (async () => {
-    const username = req.session.username;
-    const token = req.session.token;
-
-    try {
-      if (req.method == "GET") {
-
-        const id = req.params.id;
-        parseInt(id);
-
-        response = await axios.post(
-          process.env.bibliotecaDW3 + "/getEmprestimoByID",
-          { emprestimoid: id },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + token,
-            },
-          }
-        );
-
-        if (response.data.status == "ok") {
-
-          const cursos = await axios.get(process.env.bibliotecaDW3 + "/GetAll", {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`
-            }
-          });
-
-          response.data.registro[0].data_emprestimo =
-            moment(response.data.registro[0].data_emprestimo).format("YYYY-MM-DD");
-          response.data.registro[0].data_vencimento =
-            moment(response.data.registro[0].data_vencimento).format("YYYY-MM-DD");
-
-          res.render("emprestimo/view/vwFRUDrEmprestimo.njk", {
-            title: "Atualização de dados de emprestimos",
-            data: response.data.registro[0],
-            disabled: false,
-            curso: cursos.data.registro,
-            username: username,
-          });
-
-        }
-
-      } else {
-        const regData = req.body;
-
-        try {
-          const response = await axios.post(
-            process.env.bibliotecaDW3 + "/updateEmprestimo",
-            {
-              id: regData.id,
-              id_livro: regData.id_livro,
-              id_leitor: regData.id_leitor,
-              data_emprestimo: regData.data_emprestimo,
-              data_vencimento: regData.data_vencimento,
-              status: regData.status,
-              multa_atraso: regData.multa_atraso
-            },
-            {
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-              },
-              timeout: 5000,
-            }
-          );
-
-          res.json({
-            status: response.data.status,
-            msg: response.data.status,
-            data: response.data,
-            erro: null,
-          });
-
-        } catch (error) {
-          console.error('Erro ao atualizar emprestimo:', error.message);
-          res.json({
-            status: "Error",
-            msg: error.message,
-            erro: null,
-          });
-        }
-      }
-
-    } catch (erro) {
-      res.json({
-        status: "[ctlEmprestimo.js|UpdateEmprestimo] Emprestimo não localizado!"
+        username: username,
+        livros: respLivros.data.registros,
+        leitores: respLeitores.data.registros
       });
     }
-
-  })();
-
-
-const deleteEmprestimo = async (req, res) =>
-  (async () => {
+    catch (error) {
+      console.error('[insertEmprestimo|GET] Erro ao carregar listas:', error.message);
+      res.render("emprestimo/view/vwFCrEmprestimo.njk", {
+        title: "Cadastro de Empréstimo",
+        erro: "Erro ao carregar dados de Livros ou Leitores",
+        username: username
+      });
+    }
+  }
+  else {
+    // POST
     const regData = req.body;
-    const token = req.session.token;
-
     try {
       const response = await axios.post(
-        process.env.bibliotecaDW3 + "/DeleteEmprestimo",
-        {
-          id: regData.id,
-          removido: true
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          timeout: 5000,
-        }
+        process.env.SERVIDOR_BIBLIOTECA_BACK + "/insertEmprestimo",
+        regData,
+        axiosConfig(token)
       );
 
       res.json({
         status: response.data.status,
-        msg: response.data.status,
-        data: response.data,
+        msg: response.data.mensagem,
+        data: response.data.registro,
         erro: null,
       });
 
-    } catch (error) {
-      console.error('Erro ao deletar emprestimo:', error.message);
+    }
+    catch (error) {
+      console.error('[insertEmprestimo|POST] Erro:', error.message);
+      const msg = error.response ? error.response.data.mensagem : error.message;
+      res.json({ status: "Error", msg: msg, erro: null });
+    }
+  }
+};
+
+// Visualizar
+const viewEmprestimo = async (req, res) => {
+  const username = req.session.username;
+  const token = req.session.token;
+
+  try {
+    if (req.method == "GET") {
+      const id = req.params.id;
+
+      // Busca o empréstimo
+      const response = await axios.post(
+        process.env.SERVIDOR_BIBLIOTECA_BACK + "/getEmprestimoByID",
+        { id: id },
+        axiosConfig(token)
+      );
+
+      if (response.data.status == "ok") {
+        const reg = response.data.registro;
+
+        // Formata as datas para exibir no input date (YYYY-MM-DD)
+        reg.data_emprestimo = moment(reg.data_emprestimo).format("YYYY-MM-DD");
+        reg.data_vencimento = moment(reg.data_vencimento).format("YYYY-MM-DD");
+
+        const respLivros = await axios.get(process.env.SERVIDOR_BIBLIOTECA_BACK + "/getAllLivro", axiosConfig(token));
+        const respLeitores = await axios.get(process.env.SERVIDOR_BIBLIOTECA_BACK + "/getAllLeitor", axiosConfig(token));
+
+        res.render("emprestimo/view/vwFRUDrEmprestimo.njk", {
+          title: "Visualização de Empréstimo",
+          data: reg,
+          disabled: true,
+          username: username,
+          livros: respLivros.data.registros,
+          leitores: respLeitores.data.registros
+        });
+      }
+      else {
+        res.redirect("/emprestimo/manutEmprestimo");
+      }
+    }
+  }
+  catch (erro) {
+    console.log("[viewEmprestimo] Erro:", erro.message);
+
+    res.render("emprestimo/view/vwManutEmprestimo.njk", {
+      title: "Manutenção de Empréstimos",
+      data: null,
+      erro: "Erro ao buscar dados do empréstimo",
+      username: username
+    });
+  }
+};
+
+// Atualizar
+const updateEmprestimo = async (req, res) => {
+  const username = req.session.username;
+  const token = req.session.token;
+
+  try {
+    if (req.method == "GET") {
+      const idParam = req.params.id;
+      const id = parseInt(idParam);
+
+      if (isNaN(id) || id <= 0) {
+        console.log("[updateEmprestimo] ID inválido na URL.");
+        return res.redirect("/emprestimo/manutEmprestimo");
+      }
+
+      const response = await axios.post(process.env.SERVIDOR_BIBLIOTECA_BACK + "/getEmprestimoByID", { id: id }, axiosConfig(token));
+
+      if (response.data.status == "ok") {
+        const reg = response.data.registro;
+
+        // Formatação de datas
+        reg.data_emprestimo = moment(reg.data_emprestimo).format("YYYY-MM-DD");
+        reg.data_vencimento = moment(reg.data_vencimento).format("YYYY-MM-DD");
+
+        const respLivros = await axios.get(process.env.SERVIDOR_BIBLIOTECA_BACK + "/getAllLivro", axiosConfig(token));
+        const respLeitores = await axios.get(process.env.SERVIDOR_BIBLIOTECA_BACK + "/getAllLeitor", axiosConfig(token));
+
+        res.render("emprestimo/view/vwFRUDrEmprestimo.njk", {
+          title: "Edição de Empréstimo",
+          data: reg,
+          disabled: false,
+          username: username,
+          livros: respLivros.data.registros,
+          leitores: respLeitores.data.registros
+        });
+      }
+      else {
+        console.log("[updateEmprestimo] Empréstimo não encontrado.");
+        res.redirect("/emprestimo/manutEmprestimo");
+      }
+    }
+    else {
+      const regData = req.body;
+
+      const idBody = parseInt(regData.id);
+      if (isNaN(idBody)) {
+        return res.status(400).json({ status: "Error", msg: "ID inválido no envio." });
+      }
+
+      const response = await axios.post(
+        process.env.SERVIDOR_BIBLIOTECA_BACK + "/updateEmprestimo",
+        regData,
+        axiosConfig(token)
+      );
+
       res.json({
-        status: "Error",
-        msg: error.message,
+        status: response.data.status,
+        msg: response.data.mensagem || "Atualizado com sucesso",
+        data: response.data.registro,
         erro: null,
       });
     }
+  }
+  catch (error) {
+    console.error('[updateEmprestimo] Erro:', error.message);
+    const msg = error.response ? error.response.data.mensagem : error.message;
 
-  })();
+    if (req.method === "GET") {
+      return res.render("emprestimo/view/vwManutEmprestimo.njk", {
+        title: "Manutenção de Empréstimos",
+        data: null,
+        erro: `Erro ao carregar edição: ${msg}`,
+        username: username
+      });
+    }
+
+    res.json({ status: "Error", msg: msg });
+  }
+};
+
+// Delete
+const deleteEmprestimo = async (req, res) => {
+  const regData = req.body;
+  const token = req.session.token;
+
+  try {
+    const response = await axios.post(
+      process.env.SERVIDOR_BIBLIOTECA_BACK + "/deleteEmprestimo",
+      { id: regData.id },
+      axiosConfig(token)
+    );
+
+    res.json({
+      status: response.data.status || "ok",
+      msg: response.data.mensagem || "Removido com sucesso",
+      data: response.data,
+      erro: null,
+    });
+  } catch (error) {
+    console.error('[deleteEmprestimo] Erro:', error.message);
+    const msg = error.response ? error.response.data.mensagem : error.message;
+    res.json({ status: "Error", msg: msg });
+  }
+};
 
 
 module.exports = {

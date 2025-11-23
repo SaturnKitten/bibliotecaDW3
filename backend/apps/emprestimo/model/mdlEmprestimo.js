@@ -21,7 +21,7 @@ const getAllEmprestimo = async () => {
 //Função para obter um empréstimo pelo ID (não removido)
 const getEmprestimoById = async (idEmprestimoPar) => {
     const query = `SELECT 
-            e.id, e.data_emprestimo, e.data_vencimento, e.status, e.multa_atraso,
+            e.id, e.data_emprestimo, e.data_vencimento, e.status, e.multa_atraso, e.id_livro, e.id_leitor,
             li.titulo AS livro, le.nome AS leitor, le.cpf 
             FROM emprestimo e 
             INNER JOIN livro li
@@ -38,13 +38,13 @@ const getEmprestimoById = async (idEmprestimoPar) => {
 
 //Função para inserir um novo empréstimo
 const insertEmprestimo = async (dadosEmprestimo) => {
-    const {id_livro, id_leitor, data_vencimento} = dadosEmprestimo;  
+    const {id_livro, id_leitor, data_vencimento, multa_atraso} = dadosEmprestimo;  
     // Inserção do novo empréstimo no banco de dados
     const query = `INSERT INTO emprestimo
-        (id_livro, id_leitor, data_vencimento)
-        VALUES ($1, $2, $3) 
+        (id_livro, id_leitor, data_vencimento, multa_atraso)
+        VALUES ($1, $2, $3, $4) 
         RETURNING *;`;
-    const values = [id_livro, id_leitor, data_vencimento];
+    const values = [id_livro, id_leitor, data_vencimento, multa_atraso];
     const result = await db.query(query, values);
     return result.rows[0];
 }

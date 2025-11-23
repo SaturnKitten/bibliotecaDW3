@@ -2,13 +2,13 @@ const db = require("../../../database/databaseconfig");
 
 // Função para obter todos os leitores (não removidos)
 const getAllLeitor = async () => {
-    const { rows } = await db.query("SELECT id, nome, email FROM leitor WHERE removido = false ORDER BY id ASC");
+    const { rows } = await db.query("SELECT id, nome, email, cpf, data_nascimento FROM leitor WHERE removido = false ORDER BY id ASC");
     return rows;
 }
 
 // Função para obter um leitor por ID (não removido)
 const getLeitorById = async (idLeitorPar) => {
-    const { rows } = await db.query("SELECT id, nome, email FROM leitor WHERE id = $1 AND removido = false", [idLeitorPar]);
+    const { rows } = await db.query("SELECT id, nome, email, cpf, data_nascimento FROM leitor WHERE id = $1 AND removido = false", [idLeitorPar]);
     return rows[0];
 }
 

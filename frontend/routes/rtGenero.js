@@ -25,7 +25,6 @@ router.get('/updateGenero/:id', authenticationMiddleware, generoApp.updateGenero
 router.post('/insertGenero', authenticationMiddleware, generoApp.insertGenero);
 router.post('/updateGenero', authenticationMiddleware, generoApp.updateGenero);
 router.post('/deleteGenero', authenticationMiddleware, generoApp.deleteGenero);
-// router.post('/viewAlunos', authenticationMiddleware, alunosApp.viewAlunos);
 
 
 module.exports = router;

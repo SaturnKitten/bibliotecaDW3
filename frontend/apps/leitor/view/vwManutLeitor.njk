@@ -27,7 +27,8 @@
                   <th>Ação</th>
                   <th>ID</th>
                   <th>Nome</th>
-                  <th>Endereço</th>
+                  <th>E-mail</th>
+                  <th>CPF</th>
                   <th>Data de Nascimento</th>
                 </tr>
               </thead>
@@ -45,8 +46,9 @@
                     </td>
                     <td>{{reg.id}}</td>
                     <td>{{reg.nome}}</td>
-                    <td>{{reg.endereco}}</td>
-                    <td>{{reg.datanascimento}}</td>
+                    <td>{{reg.email}}</td>
+                    <td>{{reg.cpf | cpfFilter }}</td>
+                    <td>{{reg.data_nascimento | dataBr}}</td>
                   </tr>
                 {% endfor %}
               </tbody>

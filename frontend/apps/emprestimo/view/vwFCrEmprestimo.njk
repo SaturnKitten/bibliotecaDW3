@@ -22,6 +22,7 @@
                   <div class="form-group">
                     <label for="id_livro">Livro</label>
                     <select class="form-select" id="id_livro" x-model="form.id_livro">
+                      <option value="" selected disabled>Selecione um livro...</option>
                       {% for reg in livros %}
                         <option value="{{reg.id}}">{{reg.titulo}}</option>
                       {% endfor %}
@@ -33,6 +34,7 @@
                   <div class="form-group">
                     <label for="id_leitor">Leitor</label>
                     <select class="form-select" id="id_leitor" x-model="form.id_leitor">
+                      <option value="" selected disabled>Selecione um leitor...</option>
                       {% for reg in leitores %}
                         <option value="{{reg.id}}">{{reg.nome}}</option>
                       {% endfor %}
@@ -55,9 +57,9 @@
               <div class="form-group col-md-6">
                 <label for="status">Status</label>
                 <select class="form-select" id="status" x-model="form.status">
-                  <option value="pendente">Pendente</option>
-                  <option value="devolvido">Devolvido</option>
-                  <option value="atrasado">Atrasado</option>
+                  <option value="Pendente">Pendente</option>
+                  <option value="Devolvido">Devolvido</option>
+                  <option value="Atrasado">Atrasado</option>
                 </select>
               </div>
 
@@ -106,7 +108,7 @@
           id_leitor: '',
           data_emprestimo: '',
           data_vencimento: '',
-          status: 'pendente',
+          status: 'Pendente',
           multa_atraso: 0.00,
           removido: false
         },

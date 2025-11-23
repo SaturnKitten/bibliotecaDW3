@@ -4,6 +4,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 const session = require('express-session');
+const moment = require("moment");
 
 // Configuração do Arquivo de Variáveis de Ambiente (.env)
 const envFilePath = path.resolve(__dirname, 'bibliotecaFront.env');
@@ -23,10 +24,30 @@ var app = express();
 
 // Configuração do Template Engine (Nunjucks)
 // Aponta para a pasta 'apps'
-nunjucks.configure('apps', {
+const env = nunjucks.configure('apps', {
     autoescape: true,
     express: app,
     watch: true
+});
+
+// Filtro dataBr
+env.addFilter('dataBr', function(str) {
+    if (!str) return ""; // Se estiver vazio, retorna nada
+    return moment(str).format('DD/MM/YYYY'); // Formata para dia/mês/ano
+});
+
+// Filtro CPF
+env.addFilter('cpfFilter', function(val) {
+    if (!val) return "";
+    
+    // Remove tudo que não for número (limpeza)
+    let cpf = val.toString().replace(/\D/g, '');
+
+    // Se não tiver 11 dígitos, retorna o valor original (evita erros visuais)
+    if (cpf.length !== 11) return val;
+
+    // Aplica a máscara XXX.XXX.XXX-XX
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
 });
 
 app.set('view engine', 'njk');

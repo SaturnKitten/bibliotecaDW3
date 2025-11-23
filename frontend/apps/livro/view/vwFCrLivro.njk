@@ -48,7 +48,8 @@
           <div class="form-group col-md-6">
             <label>Gênero</label>
             <select class="form-select" x-model="form.id_genero">
-              {% for g in genero %}
+              <option value="" selected disabled>Selecione um gênero...</option>
+              {% for g in generos %}
                 <option value="{{g.id}}">{{g.nome}}</option>
               {% endfor %}
             </select>

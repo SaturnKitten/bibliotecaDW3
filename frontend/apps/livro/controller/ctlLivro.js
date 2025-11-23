@@ -1,169 +1,221 @@
-// ctlLivro.js
 const axios = require("axios");
 
-const manutLivro = async (req, res) =>
-  (async () => {
-    const username = req.session.username;
-    const token = req.session.token;
 
-    const resp = await axios.get(process.env.bibliotecaDW3 + "/getAllLivro", {
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
-    }).catch(error => {
-      let remoteMSG;
-      if (error.code === "ECONNREFUSED") remoteMSG = "Servidor indisponível";
-      else if (error.code === "ERR_BAD_REQUEST") remoteMSG = "Usuário não autenticado";
-      else remoteMSG = error;
+const axiosConfig = (token) => ({
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`
+  },
+  timeout: 5000
+});
 
-      return res.render("livro/view/vwManutLivro.njk", { title: "Manutenção de livros", data: null, erro: remoteMSG, username });
+const manutLivro = async (req, res) => {
+  const username = req.session.username;
+  const token = req.session.token;
+
+  try {
+    const resp = await axios.get(process.env.SERVIDOR_BIBLIOTECA_BACK + "/getAllLivro", axiosConfig(token));
+
+    res.render("livro/view/vwManutLivro.njk", {
+      title: "Manutenção de Livros",
+      data: resp.data.registros,
+      erro: null,
+      username: username,
     });
+  } catch (error) {
+    console.error('[manutLivro] Erro:', error.message);
+    const remoteMSG = (error.code === "ECONNREFUSED") ? "Servidor indisponível" : error.message;
+    
+    res.render("livro/view/vwManutLivro.njk", {
+      title: "Manutenção de Livros",
+      data: null,
+      erro: remoteMSG,
+      username: username,
+    });
+  }
+};
 
-    if (!resp) return;
+const insertLivro = async (req, res) => {
+  const token = req.session.token;
+  const username = req.session.username;
 
-    res.render("livro/view/vwManutLivro.njk", { title: "Manutenção de livros", data: resp.data.registro, erro: null, username });
-  })();
-
-const insertLivro = async (req, res) =>
-  (async () => {
-    if (req.method == "GET") {
-      const token = req.session.token;
-      // busca generos para popular select
-      const generos = await axios.get(process.env.bibliotecaDW3 + "/getAllGenero", {
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
+  if (req.method == "GET") {
+    try {
+      // Busca Gêneros para preencher o <select>
+      const generos = await axios.get(process.env.SERVIDOR_BIBLIOTECA_BACK + "/getAllGenero", axiosConfig(token));
+      
+      res.render("livro/view/vwFCrLivro.njk", {
+        title: "Cadastro de Livro",
+        data: null,
+        erro: null,
+        generos: generos.data.registros, // Plural
+        username: username
       });
-      return res.render("livro/view/vwFCLivro.njk", { title: "Cadastro de livro", data: null, erro: null, generos: generos.data.registro, username: null });
+    } catch (error) {
+      console.error('[insertLivro|GET] Erro:', error.message);
+      res.render("livro/view/vwFCrLivro.njk", { title: "Erro", erro: "Erro ao carregar gêneros", username: username });
+    }
+  } else {
+    const regData = req.body;
+    try {
+      const response = await axios.post(
+        process.env.SERVIDOR_BIBLIOTECA_BACK + "/insertLivro",
+        regData,
+        axiosConfig(token)
+      );
+
+      res.json({
+        status: response.data.status,
+        msg: response.data.mensagem,
+        data: response.data.registro,
+        erro: null,
+      });
+    } catch (error) {
+      console.error('[insertLivro|POST] Erro:', error.message);
+      const msg = error.response ? error.response.data.mensagem : error.message;
+      res.json({ status: "Error", msg: msg, erro: null });
+    }
+  }
+};
+
+const viewLivro = async (req, res) => {
+  const username = req.session.username;
+  const token = req.session.token;
+
+  try {
+    if (req.method == "GET") {
+      const id = parseInt(req.params.id);
+
+      // Validação
+      if (isNaN(id) || id <= 0) {
+        return res.redirect("/livro/manutLivro");
+      }
+
+      const response = await axios.post(
+        process.env.SERVIDOR_BIBLIOTECA_BACK + "/getLivroByID",
+        { id: id },
+        axiosConfig(token)
+      );
+
+      if (response.data.status == "ok") {
+        // Busca Gêneros para mostrar o nome no select
+        const generos = await axios.get(process.env.SERVIDOR_BIBLIOTECA_BACK + "/getAllGenero", axiosConfig(token));
+
+        res.render("livro/view/vwFRUDrLivro.njk", {
+          title: "Visualização de Livro",
+          data: response.data.registro,
+          disabled: true,
+          generos: generos.data.registros,
+          username: username
+        });
+      } else {
+        console.log("[viewLivro] ID não localizado.");
+        res.redirect("/livro/manutLivro");
+      }
+    }
+  } catch (erro) {
+    console.log("[viewLivro] Erro:", erro.message);
+    res.render("livro/view/vwManutLivro.njk", {
+      title: "Manutenção de Livros",
+      data: null,
+      erro: "Erro ao buscar dados do livro",
+      username: username
+    });
+  }
+};
+
+const updateLivro = async (req, res) => {
+  const username = req.session.username;
+  const token = req.session.token;
+
+  try {
+    if (req.method == "GET") {
+      const id = parseInt(req.params.id);
+
+      if (isNaN(id) || id <= 0) {
+        return res.redirect("/livro/manutLivro");
+      }
+
+      const response = await axios.post(
+        process.env.SERVIDOR_BIBLIOTECA_BACK + "/getLivroByID",
+        { id: id },
+        axiosConfig(token)
+      );
+
+      if (response.data.status == "ok") {
+        const generos = await axios.get(process.env.SERVIDOR_BIBLIOTECA_BACK + "/getAllGenero", axiosConfig(token));
+
+        res.render("livro/view/vwFRUDrLivro.njk", {
+          title: "Edição de Livro",
+          data: response.data.registro,
+          disabled: false,
+          generos: generos.data.registros,
+          username: username
+        });
+      }
     } else {
       const regData = req.body;
-      const token = req.session.token;
+      
+      const idBody = parseInt(regData.id);
+      if (isNaN(idBody)) return res.json({ status: "Error", msg: "ID inválido" });
+
       try {
-        const response = await axios.post(process.env.bibliotecaDW3 + "/insertLivro", {
-          titulo: regData.titulo,
-          autor: regData.autor,
-          editora: regData.editora,
-          isbn: regData.isbn,
-          edicao: regData.edicao,
-          ano_publicacao: regData.ano_publicacao,
-          id_genero: regData.id_genero,
-          removido: regData.removido || false
-        }, {
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-          timeout: 5000
+        const response = await axios.post(
+          process.env.SERVIDOR_BIBLIOTECA_BACK + "/updateLivro",
+          regData,
+          axiosConfig(token)
+        );
+
+        res.json({
+          status: response.data.status,
+          msg: response.data.mensagem || "Atualizado com sucesso",
+          data: response.data.registro,
+          erro: null,
         });
-        res.json({ status: response.data.status, msg: response.data.status, data: response.data, erro: null });
       } catch (error) {
-        console.error('Erro ao inserir livro:', error.message);
-        res.json({ status: "Error", msg: error.message, erro: null });
+        console.error('[updateLivro] Erro:', error.message);
+        const msg = error.response ? error.response.data.mensagem : error.message;
+        res.json({ status: "Error", msg: msg });
       }
     }
-  })();
+  } catch (error) {
+    console.error('[updateLivro] Geral:', error.message);
+    if (req.method === "GET") return res.redirect("/livro/manutLivro");
+    res.json({ status: "Error", msg: error.message });
+  }
+};
 
-const viewLivro = async (req, res) =>
-  (async () => {
-    const username = req.session.username;
-    const token = req.session.token;
-    try {
-      if (req.method == "GET") {
-        const id = req.params.id;
-        parseInt(id);
+const deleteLivro = async (req, res) => {
+  const regData = req.body;
+  const token = req.session.token;
 
-        const response = await axios.post(process.env.bibliotecaDW3 + "/getLivroByID", { livroid: id }, {
-          headers: { "Content-Type": "application/json", Authorization: "Bearer " + token }
-        });
+  try {
+    const id = parseInt(regData.id);
+    if (isNaN(id)) return res.json({ status: "Error", msg: "ID inválido" });
 
-        if (response.data.status == "ok") {
-          // obter generos para exibir select
-          const generos = await axios.get(process.env.bibliotecaDW3 + "/getAllGenero", {
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
-          });
+    const response = await axios.post(
+      process.env.SERVIDOR_BIBLIOTECA_BACK + "/deleteLivro",
+      { id: id },
+      axiosConfig(token)
+    );
 
-          res.render("livro/view/vwFRUDrLivro.njk", {
-            title: "Visualização de livro",
-            data: response.data.registro[0],
-            disabled: true,
-            generos: generos.data.registro,
-            username
-          });
-        } else console.log("[ctlLivro|viewLivro] ID não localizado.");
-      }
-    } catch (erro) {
-      res.json({ status: "[ctlLivro.js|viewLivro] Livro não localizado!" });
-      console.log("Erro:", erro);
-    }
-  })();
-
-const updateLivro = async (req, res) =>
-  (async () => {
-    const token = req.session.token;
-    try {
-      if (req.method == "GET") {
-        const id = req.params.id;
-        parseInt(id);
-
-        const response = await axios.post(process.env.bibliotecaDW3 + "/getLivroByID", { livroid: id }, {
-          headers: { "Content-Type": "application/json", Authorization: "Bearer " + token }
-        });
-
-        if (response.data.status == "ok") {
-          const generos = await axios.get(process.env.bibliotecaDW3 + "/getAllGenero", {
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
-          });
-
-          res.render("livro/view/vwFRUDrLivro.njk", {
-            title: "Atualização de livro",
-            data: response.data.registro[0],
-            disabled: false,
-            generos: generos.data.registro,
-            username: req.session.username
-          });
-        }
-      } else {
-        const regData = req.body;
-        try {
-          const response = await axios.post(process.env.bibliotecaDW3 + "/updateLivro", {
-            id: regData.id,
-            titulo: regData.titulo,
-            autor: regData.autor,
-            editora: regData.editora,
-            isbn: regData.isbn,
-            edicao: regData.edicao,
-            ano_publicacao: regData.ano_publicacao,
-            id_genero: regData.id_genero,
-            removido: regData.removido
-          }, {
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-            timeout: 5000
-          });
-
-          res.json({ status: response.data.status, msg: response.data.status, data: response.data, erro: null });
-        } catch (error) {
-          console.error('Erro ao atualizar livro:', error.message);
-          res.json({ status: "Error", msg: error.message, erro: null });
-        }
-      }
-    } catch (erro) {
-      res.json({ status: "[ctlLivro.js|updateLivro] Livro não localizado!" });
-    }
-  })();
-
-const deleteLivro = async (req, res) =>
-  (async () => {
-    const regData = req.body;
-    const token = req.session.token;
-    try {
-      const response = await axios.post(process.env.bibliotecaDW3 + "/deleteLivro", { id: regData.id, removido: true }, {
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        timeout: 5000
-      });
-      res.json({ status: response.data.status, msg: response.data.status, data: response.data, erro: null });
-    } catch (error) {
-      console.error('Erro ao deletar livro:', error.message);
-      res.json({ status: "Error", msg: error.message, erro: null });
-    }
-  })();
+    res.json({
+      status: response.data.status || "ok",
+      msg: response.data.mensagem || "Removido com sucesso",
+      data: response.data,
+      erro: null,
+    });
+  } catch (error) {
+    console.error('[deleteLivro] Erro:', error.message);
+    const msg = error.response ? error.response.data.mensagem : error.message;
+    res.json({ status: "Error", msg: msg });
+  }
+};
 
 module.exports = { 
-manutLivro, 
-insertLivro, 
-viewLivro, 
-updateLivro, 
-deleteLivro 
+  manutLivro, 
+  insertLivro, 
+  viewLivro, 
+  updateLivro, 
+  deleteLivro 
 };

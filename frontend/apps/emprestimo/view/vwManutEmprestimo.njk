@@ -30,10 +30,10 @@
                   <th>ID</th>
                   <th>Livro</th>
                   <th>Leitor</th>
-                  <th>Data Locação</th>
+                  <th>Data Empréstimo</th>
                   <th>Data Vencimento</th>
-                  <th>Valor</th>
-                  <th>Descrição</th>
+                  <th>Multa</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -51,12 +51,12 @@
                     </td>
 
                     <td>{{reg.id}}</td>
-                    <td>{{reg.livro_descricao}}</td>
-                    <td>{{reg.leitor_nome}}</td>
-                    <td>{{reg.dtlocacao}}</td>
-                    <td>{{reg.dtvencimento}}</td>
-                    <td>{{reg.valor}}</td>
-                    <td>{{reg.obs}}</td>
+                    <td>{{reg.livro}}</td>
+                    <td>{{reg.leitor}}</td>
+                    <td>{{reg.data_emprestimo | dataBr}}</td>
+                    <td>{{reg.data_vencimento | dataBr}}</td>
+                    <td>{{reg.multa_atraso}}</td>
+                    <td>{{reg.status}}</td>
 
                   </tr>
                 {% endfor %}

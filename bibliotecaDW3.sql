@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS emprestimo(
         ON DELETE RESTRICT,
     data_emprestimo DATE NOT NULL DEFAULT CURRENT_DATE,
     data_vencimento DATE NOT NULL DEFAULT CURRENT_DATE,
-    status VARCHAR(50) NOT NULL DEFAULT 'pendente',
+    status VARCHAR(50) NOT NULL DEFAULT 'Pendente',
     multa_atraso DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     removido BOOLEAN NOT NULL DEFAULT FALSE
 );
